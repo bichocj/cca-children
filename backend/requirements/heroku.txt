@@ -1,0 +1,6 @@
+-r base.txt
+
+gunicorn==19.7.1
+psycopg2==2.7.4
+raven==6.6.0
+boto==2.48.0

@@ -1,0 +1,2 @@
+release: ./bin/release.sh
+web: cd susii ; gunicorn susii.wsgi --log-file -

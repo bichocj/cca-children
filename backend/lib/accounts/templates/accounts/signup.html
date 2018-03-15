@@ -1,0 +1,19 @@
+{% extends "registration/_layout_registration.html" %}
+{% load i18n %}
+
+{% block content_registration %}
+
+<div class="container">
+  <form class="form-signin" method="post" novalidate>
+    <h2 class="form-signin-heading">Únete a Susii hoy.</h2>
+    {% csrf_token %}
+    {% include 'core/components/form.html' with placeholder=True form=form action=redirect_to  %}
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Regístrate</button>
+    <div class="text-center">
+      ¿Ya tienes una cuenta?
+      <a class="font-semi-bold" href="{% url 'login'%}">Iniciar sesión</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

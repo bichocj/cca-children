@@ -1,0 +1,7 @@
+*.pyc
+.idea/*
+!.gitkeep
+*.log
+*/__pycache__/
+media/
+*/node_modules/*
