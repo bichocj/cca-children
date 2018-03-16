@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd AppWeb
+cd backend/AppWeb
 python manage.py migrate --no-input
 
 if [[ $ENVIRONMENT == "prod" ]]
