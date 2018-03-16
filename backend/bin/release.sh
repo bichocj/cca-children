@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd susii
+cd AppWeb
 python manage.py migrate --no-input
 
 if [[ $ENVIRONMENT == "prod" ]]
