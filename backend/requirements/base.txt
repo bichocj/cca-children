@@ -1,10 +1,7 @@
 django==2.0.2
 djangorestframework==3.7.7
 django-filter==1.1.0
-django-crispy-forms==1.7.0
 dj-database-url==0.5.0
-openpyxl==2.5.0
 python-dateutil==2.6.1
-WeasyPrint==0.42.2
 whitenoise==3.3.1
 boto==2.48.0

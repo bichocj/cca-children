@@ -1,6 +1,6 @@
 {
-  "name": "susii-2",
-  "description": "susii-2 app",
+  "name": "appweb",
+  "description": "appweb",
   "scripts": {
     "postdeploy": "./bin/post_deploy.sh"
   },
@@ -20,7 +20,7 @@
     "HEROKU_APP_NAME": {
       "required": true
     },
-    "DJANGO_SETTINGS_MODULE": "susii.settings.heroku"
+    "DJANGO_SETTINGS_MODULE": "AppWeb.settings.heroku"
   },
   "formation": {
   },
@@ -51,10 +51,10 @@
         "SENTRY_DSN": "fake_sentry_dsn",
         "AWS_ACCESS_KEY_ID": "fake_aws_access_key_id",
         "AWS_STORAGE_BUCKET_NAME": "fake_storage_bucket_name",
-        "DJANGO_SETTINGS_MODULE": "susii.settings.test"
+        "DJANGO_SETTINGS_MODULE": "appweb.settings.test"
       },
       "scripts": {
-        "test": "cd susii ; ./manage.py test"
+        "test": "cd appweb ; ./manage.py test"
       }
     }
   }

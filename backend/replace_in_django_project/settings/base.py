@@ -31,16 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'core.apps.CoreConfig',
-    'blog.apps.BlogConfig',
-    'businesses.apps.BusinessesConfig',
-    'inventory.apps.InventoryConfig',
-    'accounts.apps.AccountsConfig',
-    'sales.apps.SalesConfig',
-    'movements.apps.MovementsConfig',
-    'petty_cash.apps.PettyCashConfig',
-    'stats.apps.StatsConfig',
-
+    #'accounts.apps.AccountsConfig',    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,7 +42,6 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
-    'crispy_forms',
     'django_filters',
 ]
 
@@ -62,13 +52,10 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.middleware.RequestCookiesMiddleware',
-    'core.middleware.BusinessUserMiddleware',
-    'core.middleware.BusinessFeaturesMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',    
 ]
 
-ROOT_URLCONF = 'susii.urls'
+ROOT_URLCONF = 'AppWeb.urls'
 
 TEMPLATES = [
     {
@@ -86,7 +73,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'susii.wsgi.application'
+WSGI_APPLICATION = 'AppWeb.wsgi.application'
 
 
 # Database
@@ -146,15 +133,9 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
-
-# Crispy forms
-
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
-
-
 # Django auth
 
-LOGIN_REDIRECT_URL = 'businesses:business_choose'
+LOGIN_REDIRECT_URL = '/panel'
 
 LOGOUT_REDIRECT_URL = 'login'
 
@@ -179,4 +160,4 @@ FIXTURES_PATH = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), '../dem
 
 MEDIA_URL = '/media/'
 
-CONTACT_EMAIL = 'neaxbusiness@gmail.com'
+CONTACT_EMAIL = 'atixbot@gmail.com'
