@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    #'accounts.apps.AccountsConfig',    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'accounts.apps.AccountsConfig',    
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -99,9 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'OPTIONS': {
             'min_length': 5,
         }
-    },
-    {
-        'NAME': 'accounts.validators.WhiteSpaceValidator',
     },
 ]
 
