@@ -15,3 +15,4 @@ class Profile(models.Model):
     def __str__(self):
         """Return username's name."""
         return f'{self.user.username} profile'
+
