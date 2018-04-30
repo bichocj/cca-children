@@ -11,21 +11,26 @@ def signup(request):
     """Display and handle the registration form."""
     if request.method == 'POST':
         form = forms.SignupForm(request.POST)
-        if form.is_valid():
-            form.save()
+        form_profile = forms.ProfileForm(request.POST)
+        if form.is_valid() and form_profile.is_valid():
+            user = form.save()
+            #Set user profile data 
+            user_profile_id = user.profile.id           
+            user.profile = form_profile.save(commit=False)
+            user.profile.id = user_profile_id
+            user.profile.save()
+            
+            # Authenticating 
             username = form.cleaned_data.get('email')
             raw_password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=raw_password)
-            # Set user language
-            # user_profile = user.profile
-            # user_profile.language = get_language_from_request(request, check_path=False)
-            # user_profile.save()
 
             login(request, user)
             utils.send_welcome_email(request, user)
             return redirect(reverse(settings.LOGIN_REDIRECT_URL))
     else:
         form = forms.SignupForm()
+        form_profile = forms.ProfileForm()
 
     page = {
         'title': _('Signup'),
@@ -33,6 +38,7 @@ def signup(request):
 
     context = {
         'form': form,
+        'form_profile': form_profile,
         'page': page
     }
     return render(request, 'accounts/signup.html', context)

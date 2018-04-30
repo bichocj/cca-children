@@ -4,7 +4,6 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
 
 from .models import Profile
 
@@ -15,12 +14,13 @@ class SignupForm(forms.ModelForm):
         """Signup form meta data."""
 
         model = User
-        fields = ('email', 'password',)
+        fields = ('first_name', 'email', 'password',)
 
     def __init__(self, *args, **kwargs):
         """Set required and widgets for fields."""
         super(SignupForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
+        self.fields['first_name'].required = True
         self.fields['password'].widget = forms.PasswordInput()        
 
         for field in self.fields:
@@ -54,6 +54,25 @@ class SignupForm(forms.ModelForm):
             user.save()
         return user
 
+
+class ProfileForm(forms.ModelForm):
+    """Create profile form."""
+
+    class Meta:
+        """profile form meta data."""
+        model = Profile
+        fields = ('phone',)
+
+    def __init__(self, *args, **kwargs):
+        """Set required and widgets for fields."""
+        super(ProfileForm, self).__init__(*args, **kwargs)        
+        for field in self.fields:
+            self.fields[field].widget.attrs.update(
+                {
+                    'class': 'form-control',
+                }
+            )
+            
 
 class CustomAuthenticationForm(AuthenticationForm):
 

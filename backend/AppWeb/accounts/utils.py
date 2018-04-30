@@ -23,7 +23,7 @@ def send_welcome_email(request, user):
     to_email = user.email
     subject = _('Welcome to AppWeb!')
 
-    template = loader.get_template('accounts/emails/welcome.html')
+    template = loader.get_template('accounts/email/welcome.html')
     message = template.render(context)
 
     return send_mail(subject, '', from_email, [to_email], fail_silently=True, html_message=message)

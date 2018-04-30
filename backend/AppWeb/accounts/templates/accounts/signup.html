@@ -10,11 +10,19 @@
 
 <div class="card fat">
   <div class="card-body">
-    <h4 class="card-title">Sign up</h4>              
+    <h4 class="card-title">Registrate</h4>              
       <form method="post" action=".">
         {% csrf_token %}
         {{ form.non_field_errors }}
         {% for field in form %}
+        <div class="form-group">
+          <label for="id_{{field.name}}">{{field.label}}</label>
+          {{field}}
+          <small id="id_{{field.name}}_help" class="form-text text-muted">{{field.help_text}}</small>
+        </div>
+        {% endfor %}
+
+        {% for field in form_profile %}
         <div class="form-group">
           <label for="id_{{field.name}}">{{field.label}}</label>
           {{field}}
