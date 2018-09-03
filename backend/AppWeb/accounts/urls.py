@@ -11,7 +11,8 @@ app_name = 'accounts'
 router = DefaultRouter()
 apipatterns = router.urls + [
     path('registration/', api.CreateUserView.as_view()),
-    path('users/me/', api.current_user)
+    path('users/me/', api.current_user),
+#    path('users/me/update/<int:pk>', api.UpdateUserView.as_view())
 ]
 
 password_reset_patterns = [

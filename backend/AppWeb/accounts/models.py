@@ -8,7 +8,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(upload_to=profile_image_path,
                                default='defaults/img/default-user.png')
-    phone = models.CharField(_('telephone'), max_length=12)
+    phone = models.CharField(_('telephone'), max_length=12, blank=True, null=True)
     #created_at = models.DateTimeField(auto_now_add=True)
     #updated_at = models.DateTimeField(auto_now=True)
 

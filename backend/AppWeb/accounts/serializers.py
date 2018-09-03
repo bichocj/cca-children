@@ -2,7 +2,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 from rest_framework import exceptions, serializers
-
+from . import models
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -24,15 +24,20 @@ class ChangePasswordSerializer(serializers.Serializer):
         return validated_data
 
 
-class UserSerializer(serializers.ModelSerializer):
-    # password = serializers.CharField(write_only=True)
-    # first_name = serializers.CharField(max_length=30, required=False)
-    # last_name = serializers.CharField(max_length=150, required=False)
-    # email = serializers.EmailField()
-    # phone = serializers.CharField(max_length=12, required=False)
+class ProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+            model = models.Profile
+            fields = ('phone', )
+
+
+class UserSerializer(serializers.ModelSerializer):    
+    profile = ProfileSerializer()
+
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'password', 'phone')
+        #fields = ('id', 'username', 'email', 'first_name', 'last_name', 'password', 'phone', 'profile',)
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'password', 'profile',)
 
     def validate_password(self, value):
         password_validation.validate_password(value)
@@ -44,29 +49,39 @@ class UserSerializer(serializers.ModelSerializer):
         if User.objects.filter(email=email).exists():
             raise exceptions.ValidationError(
                 {'email': [_('A user with that email already exists.')]})
-
+        
+        profile = validated_data.pop('profile')
         user = User.objects.create(**validated_data)
-        #user.set_password(new_password)
+        user.set_password(validated_data['password'])
+        user.save()
 
-        user.profile.phone = validated_data['phone']
+        user.profile.__dict__.update(profile)
         user.profile.save()
-        #user.save()
+        
         return user
 
-    def update(self, instance, validated_data):
-
-        if self.context['request'].user == instance:
-            instance.email = validated_data.get('email', instance.email)
-            instance.username = validated_data.get('username', instance.username)
-            instance.first_name = validated_data.get('first_name', instance.first_name)
-            instance.last_name = validated_data.get('last_name', instance.last_name)        
-            instance.profile.phone = validated_data.get('phone', instance.profile.phone)
-            password = validated_data.get('password', None)
-
-            instance.set_password(password)
-            instance.save()
-
-            return instance
-            
-        else:
-            raise Http404
+#    def update(self, instance, validated_data):
+#        import pdb; pdb.set_trace()
+#        profile = validated_data.pop('profile')
+            #
+#        instance.__dict__.update(**validated_data)
+#        instance.set_password(validated_data['password'])        
+#        instance.save()
+#
+#        instance.profile.__dict__.update(profile)            
+#        instance.profile.save()
+#
+#        if self.context['request'].user == instance:            
+#            profile = validated_data.pop('profile')
+            #
+#            instance.__dict__.update(**validated_data)
+#            instance.set_password(validated_data['password'])        
+#            instance.save()
+#
+#            instance.profile.__dict__.update(profile)            
+#            instance.profile.save()
+#
+#            return instance
+            #
+#        else:
+#            raise Http404

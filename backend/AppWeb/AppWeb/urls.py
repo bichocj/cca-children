@@ -19,8 +19,10 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', include('dashboard.urls', namespace='dashboard')),
     path('accounts/', include('accounts.urls', namespace='accounts')),
+    path('accounts/api/', include('rest_auth.urls')),
+    path('admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(
     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
