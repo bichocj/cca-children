@@ -2,6 +2,8 @@
 
 from .base import *  # noqa
 
+ALLOWED_HOSTS = ['*',]
+
 MIDDLEWARE += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]

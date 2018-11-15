@@ -38,11 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'accounts.apps.AccountsConfig',    
+    'accounts.apps.AccountsConfig',
+    'dashboard.apps.DashboardConfig',
 
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
+    'rest_auth',
 ]
 
 MIDDLEWARE = [
@@ -127,14 +129,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Internal IPs
 
 INTERNAL_IPS = [
-    '127.0.0.1',
+    '127.0.0.1', 'localhost'
 ]
 
 # Django auth
 
 LOGIN_REDIRECT_URL = '/panel'
-
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = '/accounts/login'
+LOGOUT_REDIRECT_URL = '/accounts/login'
 
 
 # Django All auth
@@ -146,10 +148,14 @@ ACCOUNT_USERNAME_BLACKLIST = ['admin']
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-    )
+        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
-
 
 # Fixtures
 

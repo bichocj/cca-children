@@ -19,9 +19,13 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
+    path('', include('dashboard.urls', namespace='dashboard')),
+    path('accounts/', include('accounts.urls', namespace='accounts')),
+    path('accounts/api/', include('rest_auth.urls')),
     path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(
+    settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 if settings.DEBUG:  # pragma: no cover
     import debug_toolbar
