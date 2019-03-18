@@ -27,7 +27,7 @@ def signup(request):
 
             login(request, user)
             utils.send_welcome_email(request, user)
-            return redirect(reverse(settings.LOGIN_REDIRECT_URL))
+            return redirect(settings.LOGIN_REDIRECT_URL)
     else:
         form = forms.SignupForm()
         form_profile = forms.ProfileForm()
