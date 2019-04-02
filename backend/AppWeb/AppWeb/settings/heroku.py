@@ -23,6 +23,8 @@ MIDDLEWARE += [
 # Application definition
 
 INSTALLED_APPS += [
+    'storages',
+	'django.contrib.postgres',
     'raven.contrib.django.raven_compat',
 ]
 
