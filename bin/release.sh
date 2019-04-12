@@ -1,10 +1,8 @@
-#!/bin/bash
-
 cd backend/AppWeb
 python manage.py migrate --no-input
+python manage.py loaddata ../demo/demo.json
 
-if [[ $ENVIRONMENT == "prod" ]]
-then
-  aws configure set preview.cloudfront true
-  aws cloudfront create-invalidation --distribution-id ${AWS_CLOUDFRONT_STATIC_DISTRIBUTION_ID} --paths "/*"
-fi
+# if [[ $ENVIRONMENT == "test" ]]
+# then
+#   python manage.py loaddata ../demo/demo.json
+# fi
