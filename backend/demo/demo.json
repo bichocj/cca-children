@@ -1,0 +1,20 @@
+[
+	{
+	  "model": "auth.user",
+	  "pk": 1,
+	  "fields": {
+	    "password": "pbkdf2_sha256$100000$5uDsDikoGpQi$22caRjpX/Hl0S0W3JyTv1+y8NTOq8kJKGTCCWZhwGCg=",
+	    "last_login": "2019-04-12T01:21:53Z",
+	    "is_superuser": true,
+	    "username": "admin",
+	    "first_name": "Peter",
+	    "last_name": "Parker",
+	    "email": "admin@gmail.com",
+	    "is_staff": true,
+	    "is_active": true,
+	    "date_joined": "2019-03-27T07:15:19Z",
+	    "groups": [],
+	    "user_permissions": []
+	  }
+	}
+]
