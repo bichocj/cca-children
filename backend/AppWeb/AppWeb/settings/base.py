@@ -162,6 +162,7 @@ REST_FRAMEWORK = {
 
 FIXTURES_PATH = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), '../demo')
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 CONTACT_EMAIL = 'atixbot@gmail.com'
