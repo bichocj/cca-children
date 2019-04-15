@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'common.apps.CommonConfig',
     'accounts.apps.AccountsConfig',
     'dashboard.apps.DashboardConfig',
+    'web.apps.WebConfig',
 
     'rest_framework',
     'rest_framework.authtoken',

@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="{% static 'common/app.css'%}">    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+<body>
+<div class="container">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light rounded">
+	    <a class="navbar-brand" href="#">Big Prime</a>
+	    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample09" aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
+	      <span class="navbar-toggler-icon"></span>
+	    </button>
+
+	    <div class="collapse navbar-collapse" id="navbarsExample09">
+	      <ul class="navbar-nav ml-auto">
+	        <li class="nav-item active">
+	          <a class="nav-link" href="#">Inicio <span class="sr-only">(current)</span></a>
+	        </li>
+	        <li class="nav-item">
+	          <a class="nav-link" href="#">Menu Item</a>
+	        </li>
+	        {% if request.user.is_authenticated %}
+	        	<li class="nav-item dropdown">
+		          <a class="nav-link dropdown-toggle" href="https://example.com" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		          	{% if request.user.first_name %}
+		          		{{ request.user.first_name }}
+		          	{% else %}
+		          		{{ request.user.username }}
+		          	{% endif %}
+	          		</a>
+		          <div class="dropdown-menu" aria-labelledby="dropdown09">	            
+		            <a class="dropdown-item" href="#">Perfil</a>
+		            <a class="dropdown-item" href="#">Cerrar sesion</a>
+		          </div>
+		        </li>
+	        {% else %}
+		        <li class="nav-item">
+		          <a class="nav-link" href="{% url 'accounts:login' %}">Ingresar</a>
+		        </li>	         
+	        {% endif %}
+	      </ul>
+	    </div>
+  	</nav>
+	<main role="main"> 
+{% block container %}
+
+{% endblock %}
+	</main>
+</div>
+<!-- /#wrapper -->
+
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" src="{% static 'common/vendor.js'%}"></script>
+<script type="text/javascript" src="{% static 'common/app.js'%}"></script>
+<script type="text/javascript" src="{% static 'web/js/functions.js'%}"></script>
+<script type="text/javascript">require('initialize');</script>
+{% block scripts %}
+
+{% endblock %}
+</body>
+</html>
