@@ -1,7 +1,5 @@
-{% extends 'accounts/layout.html' %}
 {% load i18n %}
-
-{% block content %}
+<div>
 {% autoescape off %}
     {% blocktrans %}You're receiving this email because you requested a password reset for your user account at {{ site_name }}.{% endblocktrans %}
     <br>
@@ -17,4 +15,4 @@
     {% blocktrans %}The {{ site_name }} team{% endblocktrans %}.
 
 {% endautoescape %}
-{% endblock %}
+</div>

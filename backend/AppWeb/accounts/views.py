@@ -3,12 +3,13 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
-
 from . import forms, utils
 
 
 def signup(request):
     """Display and handle the registration form."""
+    next = request.POST.get('next')
+
     if request.method == 'POST':
         form = forms.SignupForm(request.POST)
         form_profile = forms.ProfileForm(request.POST)
@@ -26,7 +27,9 @@ def signup(request):
             user = authenticate(username=username, password=raw_password)
 
             login(request, user)
-            utils.send_welcome_email(request, user)
+            utils.send_welcome_email(request, user)            
+            if next:
+              return redirect(next)
             return redirect(settings.LOGIN_REDIRECT_URL)
     else:
         form = forms.SignupForm()
@@ -39,7 +42,8 @@ def signup(request):
     context = {
         'form': form,
         'form_profile': form_profile,
-        'page': page
+        'page': page,
+        'next': next,
     }
     return render(request, 'accounts/signup.html', context)
 

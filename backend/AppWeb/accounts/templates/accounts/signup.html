@@ -29,7 +29,13 @@
           <small id="id_{{field.name}}_help" class="form-text text-muted">{{field.help_text}}</small>
         </div>
         {% endfor %}
-
+        
+        {% if next %}
+          <input type="hidden" name="next" value="{{next}}" />        
+        {% elif request.GET.next %}
+          <input type="hidden" name="next" value="{{request.GET.next}}" />
+        {% endif %}
+        
         <div class="form-group no-margin">
           <button type="submit" class="btn btn-primary btn-block">
             Registrate
@@ -37,7 +43,9 @@
         </div>
         <div class="margin-top20 text-center">
           ¿Ya tienes una cuenta?
-          <a class="font-semi-bold" href="{% url 'accounts:login'%}">Iniciar sesión</a>
+          <a class="font-semi-bold" href="{% url 'accounts:login'%}{% if request.GET.next %}?next={{request.GET.next}}{% endif %}">
+            Iniciar sesión
+          </a>
         </div>
       </form>
     </div>

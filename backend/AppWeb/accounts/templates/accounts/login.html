@@ -20,6 +20,10 @@
             </div>
             {% endfor %}
 
+
+            {% if request.GET.next %}
+              <input type="hidden" name="next" value="{{request.GET.next}}" />
+            {% endif %}
             <div class="form-group no-margin">
               <button type="submit" class="btn btn-primary btn-block">
                 Ingresar
@@ -31,7 +35,11 @@
         </div>
         <div class="margin-top20 text-center">
           ¿Eres nuevo?,
-          <a class="font-semi-bold" href="{% url 'accounts:signup'%}">registrate</a>
+          <a
+            class="font-semi-bold"
+            href="{% url 'accounts:signup'%}{% if request.GET.next %}?next={{request.GET.next}}{% endif %}">
+            registrate
+          </a>
         </div>
         </form>
     </div>
