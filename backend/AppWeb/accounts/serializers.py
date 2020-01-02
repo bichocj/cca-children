@@ -28,7 +28,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
             model = models.Profile
-            fields = ('phone', )
+            fields = ('phone', 'avatar')
 
 
 class UserSerializer(serializers.ModelSerializer):    
