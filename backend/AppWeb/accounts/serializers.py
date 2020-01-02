@@ -36,8 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        #fields = ('id', 'username', 'email', 'first_name', 'last_name', 'password', 'phone', 'profile',)
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'password', 'profile',)
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'profile',)        
 
     def validate_password(self, value):
         password_validation.validate_password(value)
@@ -60,28 +59,24 @@ class UserSerializer(serializers.ModelSerializer):
         
         return user
 
-#    def update(self, instance, validated_data):
-#        import pdb; pdb.set_trace()
-#        profile = validated_data.pop('profile')
-            #
-#        instance.__dict__.update(**validated_data)
-#        instance.set_password(validated_data['password'])        
-#        instance.save()
-#
-#        instance.profile.__dict__.update(profile)            
-#        instance.profile.save()
-#
-#        if self.context['request'].user == instance:            
-#            profile = validated_data.pop('profile')
-            #
-#            instance.__dict__.update(**validated_data)
-#            instance.set_password(validated_data['password'])        
-#            instance.save()
-#
-#            instance.profile.__dict__.update(profile)            
-#            instance.profile.save()
-#
-#            return instance
-            #
-#        else:
-#            raise Http404
+    def update(self, instance, validated_data):
+        if self.context['request'].user == instance:            
+            profile = validated_data.pop('profile')            
+            instance.__dict__.update(**validated_data)
+            instance.save()
+
+            instance.profile.__dict__.update(profile)            
+            instance.profile.save()
+
+            return instance
+            
+        else:
+            raise Http404
+
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    default_error_messages = {
+        'invalid_password': 'old password does not match'
+    }

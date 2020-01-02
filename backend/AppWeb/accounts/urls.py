@@ -3,16 +3,17 @@ from django.contrib.auth.forms import SetPasswordForm, PasswordResetForm
 from django.contrib.auth.views import (password_reset_complete, password_reset_confirm,
                                        password_reset_done, password_reset, login, logout)
 from rest_framework.routers import DefaultRouter
+from rest_framework.documentation import include_docs_urls
 
 from . import api, views, forms
 
 app_name = 'accounts'
 
 router = DefaultRouter()
+router.register('users', api.UserViewSet)
+
 apipatterns = router.urls + [
     path('registration/', api.CreateUserView.as_view()),
-    path('users/me/', api.current_user),
-#    path('users/me/update/<int:pk>', api.UpdateUserView.as_view())
 ]
 
 password_reset_patterns = [
@@ -57,5 +58,5 @@ profile_patterns = [
 urlpatterns = [
     path('', include(profile_patterns)),
     path('api/', include(apipatterns)),
-    path('password/', include(password_reset_patterns)),
+    path('password/', include(password_reset_patterns))    
 ]
