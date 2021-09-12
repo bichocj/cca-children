@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd mysite/AppWeb
+cd mysite/mysite
 
 ./manage.py collectstatic --no-input
 ./manage.py migrate --no-input

@@ -20,13 +20,14 @@
     "HEROKU_APP_NAME": {
       "required": true
     },
-    "DJANGO_SETTINGS_MODULE": "AppWeb.settings.heroku"
+    "DJANGO_SETTINGS_MODULE": "mysite.settings.heroku"
   },
   "formation": {
   },
   "addons": [
     "heroku-postgresql",
     "papertrail",    
+    "sentry",
     "sendgrid"
   ],
   "stack": "heroku-16",
@@ -47,7 +48,7 @@
         "SENTRY_DSN": "fake_sentry_dsn",
         "AWS_ACCESS_KEY_ID": "fake_aws_access_key_id",
         "AWS_STORAGE_BUCKET_NAME": "fake_storage_bucket_name",
-        "DJANGO_SETTINGS_MODULE": "AppWeb.settings.heroku",
+        "DJANGO_SETTINGS_MODULE": "mysite.settings.heroku",
         "ENVIRONMENT": "test"        
       },
       "scripts": {
