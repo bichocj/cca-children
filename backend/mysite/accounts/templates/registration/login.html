@@ -1,0 +1,36 @@
+{% extends 'registration/layout.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block title%}{% translate 'Log in' %}{% endblock %}
+{% block container %}
+<main class="form-signin">
+  <img class="mb-4" src="https://getbootstrap.com/docs/5.1/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+  <h1 class="h3 mb-3 fw-normal">{% translate 'Log in' %}</h1>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="form-floating">
+      <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" name="username">
+      <label for="floatingInput">Username</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
+      <label for="floatingPassword">Password</label>
+    </div>
+
+    <div class="checkbox mb-3">
+      <label>
+        <input type="checkbox" value="remember-me"> Remember me
+      </label>
+    </div>
+    <button class="w-100 btn btn-lg btn-primary" type="submit">{% translate 'Log in' %}</button>
+    <br>
+    <br>
+    <div>
+      <a href="/accounts/password_reset/">        
+        {% translate 'Forgotten your password or username?' %}
+      </a>
+    </div>    
+  </form>
+</main>
+{% endblock %}

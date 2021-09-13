@@ -1,8 +1,3 @@
-cd backend/AppWeb
+cd backend/mysite
 python manage.py migrate --no-input
-python manage.py loaddata ../demo/demo.json
-
-# if [[ $ENVIRONMENT == "test" ]]
-# then
-#   python manage.py loaddata ../demo/demo.json
-# fi
+python manage.py loaddata ../default-data.json
