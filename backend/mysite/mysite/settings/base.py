@@ -140,5 +140,5 @@ LOGIN_REDIRECT_URL = '/dashboard'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5" 
-CONTACT_EMAIL =  os.environ.get('FROM_EMAIL', 'atixbot@gmail.com')
+CONTACT_EMAIL =  os.environ.get('CONTACT_EMAIL', 'atixbot@gmail.com')
 FROM_EMAIL = os.environ.get('FROM_EMAIL', 'inscripcionescd2021@gmail.com')
