@@ -67,7 +67,7 @@ STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
 #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER') # apikey
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD') # js > base64.decode("U0cuVEFyZXVHaE1SWkN5bF81SE9kejRDZy5IbEVfSFNmSnUzRk1QbS1BSUU0TE5zUlpYY2tiVmdwd0N6TVJyM0RzNUVn")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
