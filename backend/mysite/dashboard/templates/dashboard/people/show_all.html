@@ -1,0 +1,55 @@
+{% extends 'dashboard/layout.html' %}
+{% load crispy_forms_tags %}
+{% block more_styles %}
+  <link href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css" rel="stylesheet">    
+{% endblock %}
+{% block container %}
+<div class="">
+  <div class="card mb-3">
+    <div class="card-header d-flex justify-content-between">
+      <h3>Personas</h3>
+      <div>
+        <a class="btn btn-primary" href="{% url 'dashboard:people_create' %}">Agregar Nuevo</a>
+      </div>
+    </div>
+    <div class="card-body">
+        <table class="table" id="example">
+          <thead>
+            <tr>
+              <th>DNI</th>
+              <th>Nombres</th>
+              <th>Telefono</th>
+              <th>Correo</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for p in people %}
+            <tr>
+              <td>{{p.dni}}</td>
+              <td>{{p.name}}</td>
+              <td>{{p.cellphone|default:''}}</td>
+              <td>{{p.email|default:''}}</td>
+              <td><a class="btn btn-light btn-sm" href="{% url 'dashboard:people_show_detail' p.dni %}">ver</a></td>
+            </tr>
+          {% endfor%}
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block more_scripts %}
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#example').DataTable({
+      language: {
+            url: '//cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json'
+        }
+    });
+} );
+</script>
+{% endblock %}

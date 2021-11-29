@@ -1,0 +1,39 @@
+{% extends 'dashboard/layout.html' %}
+{% load crispy_forms_tags %}
+{% block more_styles %}
+  <link href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css" rel="stylesheet">    
+{% endblock %}
+{% block container %}
+<div class="">
+  <div class="card mb-3">
+    <div class="card-header d-flex justify-content-between">
+      <h3>Persona</h3>
+      <div>
+        
+      </div>
+    </div>
+    <div class="card-body">
+        <table class="table" id="example">
+          <thead>
+            <tr>
+              <th>DNI</th>
+              <th>Nombres</th>
+              <th>Telefono</th>
+              <th>Correo</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>          
+            <tr>
+              <td>{{person.dni}}</td>
+              <td>{{person.name}}</td>
+              <td>{{person.cellphone|default:''}}</td>
+              <td>{{person.email|default:''}}</td>
+              <td><a class="btn btn-light">ver</a></td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

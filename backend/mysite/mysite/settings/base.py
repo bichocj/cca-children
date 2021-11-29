@@ -142,4 +142,5 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5" 
 CONTACT_EMAIL =  os.environ.get('CONTACT_EMAIL', 'atixbot@gmail.com')
 FROM_EMAIL = os.environ.get('FROM_EMAIL', 'inscripcionescd2021@gmail.com')
+APIS_PERU_TOKEN = os.environ.get('APIS_PERU_TOKEN', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJpY2hvY2pAZ21haWwuY29tIn0.BceDxWKKAMpeUVvsbzBwo9sJ12EwGnAo61vD4eyy1W0')
 DEFAULT_FROM_EMAIL = FROM_EMAIL

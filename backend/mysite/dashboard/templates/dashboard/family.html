@@ -1,0 +1,330 @@
+{% extends 'dashboard/layout.html' %}
+{% block more_styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/solid.min.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/regular.min.css"> -->
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/brands.min.css"> -->
+{% endblock %}
+{% block container %}
+<div id="app" class="d-none">
+  <div class="d-md-flex justify-content-around">
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3>Mamá</h3>
+      </div>
+      <div class="card-body">
+        <parent-searching />
+      </div>
+    </div>
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3>Papá</h3>
+      </div>
+      <div class="card-body">        
+        <parent-searching use-cellphone/>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-md-flex justify-content-around">
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3>Hijos/as</h3>
+      </div>
+      <div class="card-body">
+          <parent-searching :use-cellphone="false" :use-date-of-birth="true"/>
+      </div>
+    </div>
+  </div>
+  <hr>
+
+  
+  <div class="d-md-flex justify-content-around">
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3>Otros familiares que pueden recoger a sus niños/as</h3>
+      </div>
+      <div class="card-body">
+        <parent-searching :use-pattern-ship="true"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/x-template" id="person-searching">
+  <div>
+    <div class="modal fade" v-bind:class="parent.dni+'c'" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Editar Celular</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">            
+            ${parent.name}
+            <div class="input-group mb-3">
+              <label class="input-group-text" for="inputGroupSelect01">Celular</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="ingrese nro de Celular" 
+                aria-label="nro de Celular" 
+                aria-describedby="button-addon2"            
+                v-model='cellphone'
+              >
+              <button 
+                class="btn btn-outline-secondary" 
+                type="button" 
+                id="button-addon2"
+                v-on:click="saveCellphone()"
+                :disabled="parent.saving"
+              >
+                Guardar
+                <i class="fas fa-circle-notch fa-spin" v-if="parent.saving"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="modal fade" v-bind:class="parent.dni+'f'" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Editar Fecha de Nacimiento</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">            
+            ${parent.name}
+            <div class="input-group mb-3">
+              <label class="input-group-text" for="inputGroupSelect01">Celular</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="ingrese nro de Celular" 
+                aria-label="nro de Celular" 
+                aria-describedby="button-addon2"            
+                v-model='cellphone'
+              >
+              <button 
+                class="btn btn-outline-secondary" 
+                type="button" 
+                id="button-addon2"
+                v-on:click="saveCellphone()"
+                :disabled="parent.saving"
+              >
+                Guardar
+                <i class="fas fa-circle-notch fa-spin" v-if="parent.saving"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="modal fade" v-bind:class="parent.dni+'p'" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Editar Parentesco</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">            
+            ${parent.name}
+            <div class="input-group mb-3">
+              <label class="input-group-text" for="inputGroupSelect01">Celular</label>
+              <select class="form-select" id="inputGroupSelect02">
+                <option selected>Choose...</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </select>
+              <button 
+                class="btn btn-outline-secondary" 
+                type="button" 
+                id="button-addon2"
+                v-on:click="saveCellphone()"
+                :disabled="parent.saving"
+              >
+                Guardar
+                <i class="fas fa-circle-notch fa-spin" v-if="parent.saving"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fin Modals -->
+
+
+    <div v-if="!parent.name">
+      <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupSelect01">DNI</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          placeholder="ingrese nro de dni" 
+          aria-label="nro de dni" 
+          aria-describedby="button-addon2"            
+          v-model='parent.dni'
+        >
+        <button 
+          class="btn btn-outline-secondary" 
+          type="button" 
+          id="button-addon2"
+          v-on:click="searchPerson()"
+          :disabled="parent.searching"
+        >
+          Buscar
+          <i class="fas fa-circle-notch fa-spin" v-if="parent.searching"></i>
+        </button>
+      </div>
+    </div>
+    <div v-if="!parent.searching && parent.name">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>DNI</th>
+            <th>Nombre</th>
+            <th v-if="useCellphone">Celular</th>
+            <th v-if="useDateOfBirth">Fecha de Nacimiento</th>
+            <th v-if="usePatternShip">Parentesco</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>${parent.dni}</td>
+            <td>${parent.name}</td>
+            <td v-if="useCellphone">
+              <button 
+                type="button" 
+                v-on:click="openModal('c')"
+                class="btn btn-link">
+                ${_.isEmpty(parent.cellphone) ? 'Sin numero' : parent.cellphone }
+              </button>
+            </td>
+            <td v-if="useDateOfBirth">
+              <button 
+                type="button" 
+                v-on:click="openModal('f')"
+                class="btn btn-link">
+                ${_.isEmpty(parent.dateOfBirth) ? 'Sin fecha' : parent.dateOfBirth }
+              </button>
+            </td>
+            <td v-if="usePatternShip">
+              <button 
+                type="button" 
+                v-on:click="openModal('p')"
+                class="btn btn-link">
+                ${_.isEmpty(parent.dateOfBirth) ? 'Sin especificar' : parent.dateOfBirth }
+              </button>
+            </td>
+            <td> 
+              <button 
+                type="button" 
+                class="btn btn-outline-danger"
+                title="quitar persona"
+                v-on:click="parent={dni:null, searching: false}"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</script>
+{% endblock %}
+{% block more_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/core.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/lodash.isempty@4.4.0/index.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+  document.onreadystatechange = () => {
+    if (document.readyState == "complete") {
+      document.getElementById('app').classList.remove('d-none');      
+    }
+  }
+  Vue.component('parent-searching', {    
+    data: function () {
+      return {
+        parent: {
+          searching: false,          
+          dni: null
+        },
+        cellphone:123
+      }
+    },
+    props: {
+      useCellphone: {
+        type: Boolean,
+        default: true
+      },
+      useDateOfBirth: {
+        type: Boolean,
+        default: false
+      },
+      usePatternShip: {
+        type: Boolean,
+        default: false
+      }
+    },
+    methods: {
+      isValidDni: function(dni) {
+        if(_.isEmpty(dni)) {
+          alert('dni invalido')
+          return false;
+        }
+        if(dni.length !== 8) {
+          alert('dni invalido')
+          return false;
+        }
+        return true;
+      },
+      openModal: function(type) {
+        const ref = document.getElementsByClassName(this.parent.dni+type)[0]
+        const myModal = new bootstrap.Modal(ref)
+        myModal.show()
+      },
+      searchPerson: function () {
+        this.parent.searching = true;
+        if(this.isValidDni(this.parent.dni)) {
+          fetch(`/dashboard/get-person/${this.parent.dni}/?commit=true`).then( async(r) => {
+            if(r.status === 200) {
+              const {name, cellphone} = await r.json()
+              this.parent.name = name;
+              this.parent.cellphone = cellphone;
+            }
+            this.parent.searching = false;
+          });
+        } else {
+          this.parent.searching = false;
+        }
+      }
+    },
+    template: "#person-searching",
+    delimiters: ['${', '}']
+  })
+
+  var app = new Vue({
+    el: '#app',
+    data: {
+      message: 'Hello Vue!',
+      mom: {
+        searching: false,
+        dni: null,
+      }
+    },
+    
+    delimiters: ['${', '}']
+  })
+</script>
+
+{% endblock %}

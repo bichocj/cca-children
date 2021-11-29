@@ -1,0 +1,42 @@
+{% extends 'dashboard/layout.html' %}
+{% load crispy_forms_tags %}
+{% block container %}
+<div class="">
+  <div class="card mb-3">
+    <div class="card-header">
+      <h3>{{title}}</h3>
+    </div>
+    <div class="card-body">
+        {% crispy form %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block more_scripts %}
+<script>
+  window.onload = function() {
+    const dniInput = document.getElementById('id_dni');
+    dniInput.addEventListener('keyup', function(evt) {
+      const val = dniInput.value;
+      if(val.length === 8) {
+        fetch(`/dashboard/get-person/${val}/`).then( async(r) => {
+          if(r.status === 200) {
+            const data = await r.json()
+            document.getElementById('id_name').value = data.name;
+            document.getElementById('id_name').setAttribute('readonly', true);
+            document.getElementById('id_email').value = data.email;
+            document.getElementById('id_cellphone').value = data.cellphone;
+            document.getElementById('id_red').value = data.red;
+          } else {
+            document.getElementById('id_name').removeAttribute('readonly');    
+          }
+        }).catch(e => {
+          console.error(e)
+        })
+      } else {
+        document.getElementById('id_name').removeAttribute('readonly');
+      }
+    })
+  }
+</script>
+{% endblock %}
