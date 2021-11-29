@@ -10,10 +10,10 @@
   <div class="d-md-flex justify-content-around">
     <div class="card mb-3">
       <div class="card-header">
-        <h3>Mamá</h3>
+        <h3>Mamá ${mom.name}</h3>
       </div>
       <div class="card-body">
-        <parent-searching />
+        <parent-searching :on-change="updateMom" />
       </div>
     </div>
     <div class="card mb-3">
@@ -21,7 +21,7 @@
         <h3>Papá</h3>
       </div>
       <div class="card-body">        
-        <parent-searching use-cellphone/>
+        <parent-searching use-cellphone :on-change="updateDad" />
       </div>
     </div>
   </div>
@@ -32,12 +32,16 @@
         <h3>Hijos/as</h3>
       </div>
       <div class="card-body">
-          <parent-searching :use-cellphone="false" :use-date-of-birth="true"/>
+          <parent-searching
+            v-for="(child, index) in children"
+            :key="child.id"
+            :id="child.id"
+            :use-cellphone="false" 
+            :use-date-of-birth="true" 
+            :on-change="updateChildren" />
       </div>
     </div>
   </div>
-  <hr>
-
   
   <div class="d-md-flex justify-content-around">
     <div class="card mb-3">
@@ -45,123 +49,82 @@
         <h3>Otros familiares que pueden recoger a sus niños/as</h3>
       </div>
       <div class="card-body">
-        <parent-searching :use-pattern-ship="true"/>
+        <parent-searching 
+          v-for="(child, index) in others"
+          :key="child.id"
+          :id="child.id"
+          :use-pattern-ship="true" 
+          :on-change="updateOthers"
+        />
       </div>
     </div>
+  </div>
+
+  <div class="text-center mb-5">
+    <button class="btn btn-primary btn-lg" v-on:click="saveAll">Guardar</button>
   </div>
 </div>
 
 
 <script type="text/x-template" id="person-searching">
   <div>
-    <div class="modal fade" v-bind:class="parent.dni+'c'" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" v-bind:class="parent.dni" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Editar Celular</h5>
+            <h5 class="modal-title" id="exampleModalLabel">Editar a ${parent.name}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">            
-            ${parent.name}
-            <div class="input-group mb-3">
-              <label class="input-group-text" for="inputGroupSelect01">Celular</label>
-              <input 
-                type="text" 
-                class="form-control" 
-                placeholder="ingrese nro de Celular" 
-                aria-label="nro de Celular" 
-                aria-describedby="button-addon2"            
-                v-model='cellphone'
-              >
-              <button 
-                class="btn btn-outline-secondary" 
-                type="button" 
-                id="button-addon2"
-                v-on:click="saveCellphone()"
-                :disabled="parent.saving"
-              >
-                Guardar
-                <i class="fas fa-circle-notch fa-spin" v-if="parent.saving"></i>
-              </button>
+          <div class="modal-body">                      
+            <div class="mb-3 row" v-if="useCellphone">
+              <label for="staticEmail" class="col-sm-5 col-form-label">Celular</label>
+              <div class="col-sm-5">
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="ingrese nro de Celular"                 
+                  v-model='cellphone'
+                />
+              </div>
             </div>
+
+            <div class="mb-3 row" v-if="useDateOfBirth">
+              <label for="staticEmail" class="col-sm-5 col-form-label">Fecha de Nacimiento</label>
+              <div class="col-sm-5">
+                <input 
+                  type="date" 
+                  class="form-control" 
+                  placeholder="ingrese nro de Celular"                 
+                  v-model='cellphone'
+                />
+              </div>
+            </div>
+
+            <div class="mb-3 row" v-if="usePatternShip">
+              <label for="staticEmail" class="col-sm-5 col-form-label">Parentesco</label>
+              <div class="col-sm-5">
+                <select class="form-select" id="inputGroupSelect02">
+                  <option selected>selecciona uno</option>
+                  <option value="3">hermano/a</option>
+                  <option value="4">tio/a</option>
+                  <option value="5">abuelo/a</option>
+                  <option value="6">primo/a</option>
+                  <option value="7">sobrino/</option>
+                </select>
+              </div>
+            </div>            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-primary">Guardar Cambios</button>
           </div>
         </div>
       </div>
     </div>
 
 
-    <div class="modal fade" v-bind:class="parent.dni+'f'" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Editar Fecha de Nacimiento</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">            
-            ${parent.name}
-            <div class="input-group mb-3">
-              <label class="input-group-text" for="inputGroupSelect01">Celular</label>
-              <input 
-                type="text" 
-                class="form-control" 
-                placeholder="ingrese nro de Celular" 
-                aria-label="nro de Celular" 
-                aria-describedby="button-addon2"            
-                v-model='cellphone'
-              >
-              <button 
-                class="btn btn-outline-secondary" 
-                type="button" 
-                id="button-addon2"
-                v-on:click="saveCellphone()"
-                :disabled="parent.saving"
-              >
-                Guardar
-                <i class="fas fa-circle-notch fa-spin" v-if="parent.saving"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="modal fade" v-bind:class="parent.dni+'p'" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Editar Parentesco</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">            
-            ${parent.name}
-            <div class="input-group mb-3">
-              <label class="input-group-text" for="inputGroupSelect01">Celular</label>
-              <select class="form-select" id="inputGroupSelect02">
-                <option selected>Choose...</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </select>
-              <button 
-                class="btn btn-outline-secondary" 
-                type="button" 
-                id="button-addon2"
-                v-on:click="saveCellphone()"
-                :disabled="parent.saving"
-              >
-                Guardar
-                <i class="fas fa-circle-notch fa-spin" v-if="parent.saving"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Fin Modals -->
-
-
     <div v-if="!parent.name">
       <div class="input-group mb-3">
         <label class="input-group-text" for="inputGroupSelect01">DNI</label>
@@ -204,7 +167,7 @@
             <td v-if="useCellphone">
               <button 
                 type="button" 
-                v-on:click="openModal('c')"
+                v-on:click="openModal()"
                 class="btn btn-link">
                 ${_.isEmpty(parent.cellphone) ? 'Sin numero' : parent.cellphone }
               </button>
@@ -212,7 +175,7 @@
             <td v-if="useDateOfBirth">
               <button 
                 type="button" 
-                v-on:click="openModal('f')"
+                v-on:click="openModal()"
                 class="btn btn-link">
                 ${_.isEmpty(parent.dateOfBirth) ? 'Sin fecha' : parent.dateOfBirth }
               </button>
@@ -220,7 +183,7 @@
             <td v-if="usePatternShip">
               <button 
                 type="button" 
-                v-on:click="openModal('p')"
+                v-on:click="openModal()"
                 class="btn btn-link">
                 ${_.isEmpty(parent.dateOfBirth) ? 'Sin especificar' : parent.dateOfBirth }
               </button>
@@ -230,7 +193,7 @@
                 type="button" 
                 class="btn btn-outline-danger"
                 title="quitar persona"
-                v-on:click="parent={dni:null, searching: false}"
+                v-on:click="cleanPerson"
               >
                 <i class="fas fa-times"></i>
               </button>
@@ -249,7 +212,7 @@
 <script>
   document.onreadystatechange = () => {
     if (document.readyState == "complete") {
-      document.getElementById('app').classList.remove('d-none');      
+      document.getElementById('app')?.classList.remove('d-none');      
     }
   }
   Vue.component('parent-searching', {    
@@ -263,6 +226,7 @@
       }
     },
     props: {
+      id: String,
       useCellphone: {
         type: Boolean,
         default: true
@@ -274,6 +238,9 @@
       usePatternShip: {
         type: Boolean,
         default: false
+      },
+      onChange: {
+        type: Object
       }
     },
     methods: {
@@ -288,8 +255,8 @@
         }
         return true;
       },
-      openModal: function(type) {
-        const ref = document.getElementsByClassName(this.parent.dni+type)[0]
+      openModal: function() {
+        const ref = document.getElementsByClassName(this.parent.dni)[0]
         const myModal = new bootstrap.Modal(ref)
         myModal.show()
       },
@@ -303,10 +270,15 @@
               this.parent.cellphone = cellphone;
             }
             this.parent.searching = false;
+            this.onChange(this.parent, this.id);
           });
         } else {
           this.parent.searching = false;
         }
+      },
+      cleanPerson: function() {
+        this.parent = {dni:null, searching: false};
+        this.onChange({}, this.id);
       }
     },
     template: "#person-searching",
@@ -317,12 +289,53 @@
     el: '#app',
     data: {
       message: 'Hello Vue!',
-      mom: {
-        searching: false,
-        dni: null,
+      mom: {},
+      dad: {},
+      children: [{id: `i${Math.random()}`}],
+      others: [{id: `i${Math.random()}`}],      
+    },
+    methods: {
+      updateMom(parent) {
+        this.mom = parent;
+      },
+      updateDad(parent) {
+        this.dad = parent;
+      },
+      updateChildren(parent, id) {
+        if(parent.dni) {
+          const lastIndex = this.children.length - 1;
+          this.children[lastIndex] = {...parent, ...this.children[lastIndex]};
+          this.children.push({id: `i${Math.random()}`});
+        } else {
+          for(let i = 0; i < this.children.length; i++) {
+            if(this.children[i].id === id) {
+              this.children.splice(i, 1);
+              break;
+            }
+          }
+        }
+      },
+      updateOthers(parent) {
+        if(parent.dni) {
+          const lastIndex = this.others.length - 1;
+          this.others[lastIndex] = {...parent, ...this.others[lastIndex]};
+          this.others.push({id: `i${Math.random()}`});
+        } else {
+          for(let i = 0; i < this.others.length; i++) {
+            if(this.others[i].id === id) {
+              this.others.splice(i, 1);
+              break;
+            }
+          }
+        }
+      },
+      saveAll() {
+        console.log(this.mom)
+        console.log(this.dad)
+        console.log(this.children)
+        console.log(this.other)
       }
     },
-    
     delimiters: ['${', '}']
   })
 </script>
