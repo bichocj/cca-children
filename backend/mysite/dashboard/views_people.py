@@ -2,6 +2,7 @@ import json
 import requests
 from django.shortcuts import redirect, render
 from django.forms.models import model_to_dict
+from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.urls import reverse
 from django.conf import settings
@@ -28,6 +29,27 @@ def show_details(request, dni):
     return render(request, 'dashboard/people/show_details.html', locals())
   except models.Person.DoesNotExist:
     return redirect(reverse('dashboard:people_show_all'))
+
+def family_create(request):
+  body = json.loads(request.body)
+  children = body['children'];
+  others = body['others'];
+  mom = body['mom'];
+  dad = body['dad'];
+
+  objs = []
+
+  for child in children:
+    if mom:
+      objs.append(models.ChildSib(child=models.Person(id=child), sib=models.Person(id=mom), relation=1))
+    if dad:
+      objs.append(models.ChildSib(child=models.Person(id=child), sib=models.Person(id=dad), relation=2))      
+    for other in others:
+      objs.append(models.ChildSib(child=models.Person(id=child), sib=models.Person(id=other), relation=5))      
+  
+  models.ChildSib.objects.bulk_create(objs, ignore_conflicts=True)
+  
+  return JsonResponse({'success': True})
 
 def getPerson(request, dni):
   try:

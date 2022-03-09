@@ -32,6 +32,7 @@ class ChildSib(models.Model):
   class Meta:
     verbose_name = "pariente"
     verbose_name_plural = "parientes"
+    unique_together = ['child', 'sib']
 
 
 class Attendance(models.Model):

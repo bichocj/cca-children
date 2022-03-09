@@ -34,8 +34,8 @@
       <div class="card-body">
           <parent-searching
             v-for="(child, index) in children"
-            :key="child.id"
-            :id="child.id"
+            :key="child.guid"
+            :id="child.guid"
             :use-cellphone="false" 
             :use-date-of-birth="true" 
             :on-change="updateChildren" />
@@ -51,8 +51,8 @@
       <div class="card-body">
         <parent-searching 
           v-for="(child, index) in others"
-          :key="child.id"
-          :id="child.id"
+          :key="child.guid"
+          :id="child.guid"
           :use-pattern-ship="true" 
           :on-change="updateOthers"
         />
@@ -207,6 +207,7 @@
 {% endblock %}
 {% block more_scripts %}
 <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/lodash.isempty@4.4.0/index.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 <script>
@@ -265,9 +266,10 @@
         if(this.isValidDni(this.parent.dni)) {
           fetch(`/dashboard/get-person/${this.parent.dni}/?commit=true`).then( async(r) => {
             if(r.status === 200) {
-              const {name, cellphone} = await r.json()
+              const {name, cellphone, id} = await r.json()
               this.parent.name = name;
               this.parent.cellphone = cellphone;
+              this.parent.id = id;
             }
             this.parent.searching = false;
             this.onChange(this.parent, this.id);
@@ -291,8 +293,8 @@
       message: 'Hello Vue!',
       mom: {},
       dad: {},
-      children: [{id: `i${Math.random()}`}],
-      others: [{id: `i${Math.random()}`}],      
+      children: [{guid: `i${Math.random()}`,}],
+      others: [{guid: `i${Math.random()}`}],      
     },
     methods: {
       updateMom(parent) {
@@ -301,39 +303,57 @@
       updateDad(parent) {
         this.dad = parent;
       },
-      updateChildren(parent, id) {
+      updateChildren(parent, guid) {
         if(parent.dni) {
           const lastIndex = this.children.length - 1;
           this.children[lastIndex] = {...parent, ...this.children[lastIndex]};
-          this.children.push({id: `i${Math.random()}`});
+          this.children.push({guid: `i${Math.random()}`});
         } else {
           for(let i = 0; i < this.children.length; i++) {
-            if(this.children[i].id === id) {
+            if(this.children[i].guid === guid) {
               this.children.splice(i, 1);
               break;
             }
           }
         }
       },
-      updateOthers(parent) {
+      updateOthers(parent, guid) {
         if(parent.dni) {
           const lastIndex = this.others.length - 1;
           this.others[lastIndex] = {...parent, ...this.others[lastIndex]};
-          this.others.push({id: `i${Math.random()}`});
+          this.others.push({guid: `i${Math.random()}`});
         } else {
           for(let i = 0; i < this.others.length; i++) {
-            if(this.others[i].id === id) {
+            if(this.others[i].guid === guid) {
               this.others.splice(i, 1);
               break;
             }
           }
         }
       },
-      saveAll() {
-        console.log(this.mom)
-        console.log(this.dad)
-        console.log(this.children)
-        console.log(this.other)
+      async saveAll() {
+        const csrftoken = Cookies.get('csrftoken');
+        const data = {
+          mom: !_.isEmpty(this.mom) && this.mom.id,
+          dad: !_.isEmpty(this.dad) && this.dad.id,
+          children: this.children.filter(c => c.id).map(c => c.id),
+          others: this.others.filter(c => c.id).map(c => c.id),
+        }
+
+        const response = await fetch('/dashboard/family/create/', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            "X-CSRFToken": csrftoken,
+            "Accept": "application/json",
+            'Content-Type': 'application/json'
+          },
+          redirect: 'follow', // manual, *follow, error
+          referrerPolicy: 'no-referrer',
+          body: JSON.stringify(data)
+        });
+        const xxx = response.json();
+        console.log(xxx);
       }
     },
     delimiters: ['${', '}']
