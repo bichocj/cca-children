@@ -10,10 +10,11 @@ urlpatterns = [
   path('', TemplateView.as_view(template_name="dashboard/index.html")),
   path('family/', TemplateView.as_view(template_name="dashboard/family.html"), name='family'),
   path('family/create/', views_people.family_create, name='family_create'),
-  path('attendance/', TemplateView.as_view(template_name="dashboard/attendance.html"), name='attendance'),
+  path('attendance/', TemplateView.as_view(template_name="dashboard/attendance.html"), name='attendance'),  
   path('people/', views_people.show_all, name='people_show_all'),
   path('people/create/', views_people.create, name='people_create'),
   path('people/show-detail/<str:dni>/', views_people.show_details, name='people_show_detail'),
+  re_path(r'^get-children/(?P<dni>[0-9]{8})/$', views_people.getChildren, name='get-children'),
   re_path(r'^get-person/(?P<dni>[0-9]{8})/$', views_people.getPerson, name='get-person'),
 
 ]

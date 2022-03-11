@@ -2,8 +2,6 @@
 {% block more_styles %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/solid.min.css">
-<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/regular.min.css"> -->
-<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/brands.min.css"> -->
 {% endblock %}
 {% block container %}
 <div id="app" class="d-none">
@@ -135,6 +133,7 @@
           aria-label="nro de dni" 
           aria-describedby="button-addon2"            
           v-model='parent.dni'
+          v-on:keyup.enter='searchPerson()'
         >
         <button 
           class="btn btn-outline-secondary" 
@@ -270,9 +269,11 @@
               this.parent.name = name;
               this.parent.cellphone = cellphone;
               this.parent.id = id;
+              this.onChange(this.parent, this.id);
+            } else {
+              alert('Persona no encontrada');
             }
             this.parent.searching = false;
-            this.onChange(this.parent, this.id);
           });
         } else {
           this.parent.searching = false;

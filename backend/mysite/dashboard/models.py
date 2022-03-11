@@ -1,3 +1,4 @@
+from statistics import mode
 from django.db import models
 
 ROL_CHOICES = (
@@ -7,7 +8,11 @@ ROL_CHOICES = (
   (4, 'tio/a'),
   (5, 'abuelo/a'),
   (6, 'primo/a'),
-  (7, 'sobrino/a')
+
+  (7, 'sobrino/a'),
+  (8, 'hijo/a'),
+  (9, 'sobrino/a'),
+  (10, 'nieto/a'),
 )
 
 
@@ -16,6 +21,7 @@ class Person(models.Model):
   name = models.CharField(('Nombre'), max_length=255, blank=False, null=False)
   email = models.EmailField(('Correo Electronico'), max_length=255, blank=True, null=True)
   cellphone = models.CharField(('Celular'), max_length=12, blank=True, null=True)
+  date_of_birth = models.DateField(('Fecha de Nacimiento'), blank=True, null=True)
 
   def __str__(self):
     return self.dni
@@ -27,7 +33,8 @@ class Person(models.Model):
 class ChildSib(models.Model):
   child = models.ForeignKey(Person, verbose_name='niño/a', on_delete=models.CASCADE, related_name='child')
   sib = models.ForeignKey(Person, verbose_name='pariente', on_delete=models.CASCADE, related_name='sib')
-  relation = models.IntegerField('relacion', choices=ROL_CHOICES, blank=True, null=True)
+  relationship_up = models.IntegerField('relacion arriba', choices=ROL_CHOICES, blank=True, null=True)
+  relationship_down = models.IntegerField('relacion abajo', choices=ROL_CHOICES, blank=True, null=True)
 
   class Meta:
     verbose_name = "pariente"

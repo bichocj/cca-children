@@ -1,29 +1,74 @@
 {% extends 'dashboard/layout.html' %}
+{% block more_styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/solid.min.css">
+{% endblock %}
 {% block container %}
-<div class="">
+<div id="app" class="d-none">
   <div class="card mb-3">
     <div class="card-header">
       <h3>Don/Doña</h3>
     </div>
     <div class="card-body">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>DNI</th>
-            <th>Nombre</th>
-            <th>Celular</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>788124</td>
-            <td>Solansh Montoya Monroy</td>
-            <td>124124412</td>
-          </tr>
-        </tbody>
-      </table>
+
+      <div v-if="!parent.name">
+        <div class="input-group mb-3">
+          <label class="input-group-text" for="inputGroupSelect01">DNI</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="ingrese nro de dni" 
+            aria-label="nro de dni" 
+            aria-describedby="button-addon2"            
+            v-model='parent.dni'
+            v-on:keyup.enter='searchPerson()'
+          >
+          <button 
+            class="btn btn-outline-secondary" 
+            type="button" 
+            id="button-addon2"
+            v-on:click="searchPerson()"
+            :disabled="parent.searching"
+          >
+            Buscar
+            <i class="fas fa-circle-notch fa-spin" v-if="parent.searching"></i>
+          </button>
+        </div>
+      </div>
+      <div v-if="!parent.searching && parent.name">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>DNI</th>
+              <th>Nombre</th>
+              <th>Celular</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>${parent.dni}</td>
+              <td>${parent.name}</td>
+              <td>
+                ${_.isEmpty(parent.cellphone) ? 'Sin numero' : parent.cellphone }            
+              </td>          
+              <td> 
+                <button 
+                  type="button" 
+                  class="btn btn-outline-danger"
+                  title="quitar persona"
+                  v-on:click="cleanPerson"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
+
 
   <div class="card mb-3">
     <div class="card-header">
@@ -33,30 +78,126 @@
         <table class="table">
           <thead>
             <tr>
+              <th></th>
               <th>DNI</th>
               <th>Nombre</th>
+              <th>Edad</th>
               <th>Parentesco</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>788124</td>
-              <td>Solansh Montoya Monroy</td>
-              <td>Hijo/a</td>
-            </tr>
-            <tr>
-              <td>788124</td>
-              <td>Solansh Montoya Monroy</td>
-              <td>Hijo/a</td>
-            </tr>
-            <tr>
-              <td>788124</td>
-              <td>Solansh Montoya Monroy</td>
-              <td>Hijo/a</td>
+            <tr v-for="(child, index) in children" :key="child.id" id="child.id">
+              <td>
+                <input type="checkbox" class="custom-control-input" v-model="child.checked">
+              </td>
+              <td>${child.dni}</td>
+              <td>${child.name}</td>
+              <td>${child.dateOfBirth ? getAge(child.dateOfBirth) : '-'}</td>
+              <td>${child.relationship}</td>
             </tr>
           </tbody>
         </table>
     </div>
   </div>
+
+  
+  <div class="text-center mb-5">
+    <button class="btn btn-primary btn-lg" v-on:click="saveAndPrint">Guardar</button>
+  </div>
+
 </div>
+{% endblock %}
+{% block more_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/lodash.isempty@4.4.0/index.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+  document.onreadystatechange = () => {
+    if (document.readyState == "complete") {
+      document.getElementById('app')?.classList.remove('d-none');      
+    }
+  }
+
+  var app = new Vue({
+    el: '#app',
+    data: function () {
+      return {
+        parent: {
+          searching: false,          
+          dni: null
+        },
+        children: [],
+        childrenLoading: false,
+        cellphone:123
+      }
+    },
+    methods: {
+      isValidDni: function(dni) {
+        if(_.isEmpty(dni)) {
+          alert('dni invalido')
+          return false;
+        }
+        if(dni.length !== 8) {
+          alert('dni invalido')
+          return false;
+        }
+        return true;
+      },
+      fetchChildren: function () {
+        this.childrenLoading = true;
+        fetch(`/dashboard/get-children/${this.parent.dni}/`).then( async(r) => {
+            if(r.status === 200) {
+              const { data } = await r.json();
+              this.children = data;
+              this.children = this.children.map(c => ({...c, checked: true}));
+            } else {
+              alert('Error en el servidor');
+            }
+            this.childrenLoading = false;
+        });
+      },
+      searchPerson: function () {
+        this.parent.searching = true;
+        if(this.isValidDni(this.parent.dni)) {
+          fetch(`/dashboard/get-person/${this.parent.dni}/?commit=true`).then( async(r) => {
+            if(r.status === 200) {
+              const {name, cellphone, id} = await r.json()
+              this.parent.name = name;
+              this.parent.cellphone = cellphone;
+              this.parent.id = id;
+              this.fetchChildren();
+            } else {
+              alert('Persona no encontrada');
+            }
+            this.parent.searching = false;
+          });
+        } else {
+          this.parent.searching = false;
+        }
+      },
+      cleanPerson: function() {
+        this.parent = {dni:null, searching: false};
+        this.children = [];
+      },
+      saveAndPrint: function() {
+        console.log(this.children.filter(c => c.checked))
+        alert('save and print')
+      },
+      getAge: function(dateString) {
+          var today = new Date();
+          var birthDate = new Date(dateString);
+          var age = today.getFullYear() - birthDate.getFullYear();
+          var m = today.getMonth() - birthDate.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) 
+          {
+            age--;
+          }
+          return age;
+      }
+    },
+    delimiters: ['${', '}']
+  })
+</script>
+
 {% endblock %}
