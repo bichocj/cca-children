@@ -43,7 +43,6 @@ class ChildSib(models.Model):
 
 
 class Attendance(models.Model):
-  code = models.CharField('codigo', max_length=10, blank=False, null=False)
   sib = models.ForeignKey(Person, verbose_name='pariente', on_delete=models.CASCADE)
   created_at = models.DateTimeField(auto_now_add=True)
 
@@ -53,6 +52,7 @@ class Attendance(models.Model):
 
 
 class AttendanceDetail(models.Model):
+  attendance = models.ForeignKey(Attendance, on_delete=models.CASCADE, related_name='attendance')
   child = models.ForeignKey(Person, verbose_name='niño/a', on_delete=models.CASCADE)
 
   class Meta:
