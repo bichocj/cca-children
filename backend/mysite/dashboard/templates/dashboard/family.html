@@ -5,6 +5,21 @@
 {% endblock %}
 {% block container %}
 <div id="app" class="d-none">
+  <h2>Familia, crear/actualizar</h2>
+  <br>
+
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <!--<div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">-->
+    <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto" id="toastTitle">Aviso</strong>        
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body" id="toastBody">
+      </div>
+    </div>
+  </div>
+
   <div class="d-md-flex justify-content-around">
     <div class="card mb-3">
       <div class="card-header">
@@ -190,7 +205,7 @@
             <td> 
               <button 
                 type="button" 
-                class="btn btn-outline-danger"
+                class="btn btn-outline-danger cleanPerson"
                 title="quitar persona"
                 v-on:click="cleanPerson"
               >
@@ -210,9 +225,24 @@
 <!-- <script src="https://cdn.jsdelivr.net/npm/lodash.isempty@4.4.0/index.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 <script>
+  var $toast;
+  function showToast(title, subtitle, type='primary') {
+    const myToastEl = document.getElementById('liveToast');
+    const myToastTitleEl = document.getElementById('toastTitle');
+    const myToastBodyEl = document.getElementById('toastBody');
+    myToastEl.classList.remove(`bg-${myToastEl.dataset.lastType}`);
+    myToastEl.classList.add(`bg-${type}`);
+    myToastEl.dataset.lastType = type;
+    myToastTitleEl.innerText = title;
+    myToastBodyEl.innerText = subtitle;
+    $toast.show();
+  }
+
   document.onreadystatechange = () => {
     if (document.readyState == "complete") {
-      document.getElementById('app')?.classList.remove('d-none');      
+      document.getElementById('app')?.classList.remove('d-none');
+      const myToastEl = document.getElementById('liveToast');
+      $toast = bootstrap.Toast.getOrCreateInstance(myToastEl)
     }
   }
   Vue.component('parent-searching', {    
@@ -246,11 +276,11 @@
     methods: {
       isValidDni: function(dni) {
         if(_.isEmpty(dni)) {
-          alert('dni invalido')
+          showToast('Advertencia', 'DNI invalido', 'danger');
           return false;
         }
         if(dni.length !== 8) {
-          alert('dni invalido')
+          showToast('Advertencia', 'DNI invalido', 'danger');
           return false;
         }
         return true;
@@ -333,7 +363,11 @@
         }
       },
       async saveAll() {
-        const csrftoken = Cookies.get('csrftoken');
+        const csrftoken = Cookies.get('csrftoken');        
+        if((_.isEmpty(this.mom) || _.isEmpty(this.dad) || this.others.length === 1) && this.children.length === 1) {
+          showToast('Advertencia', 'Complete los campos', 'warning')
+          return;
+        }
         const data = {
           mom: !_.isEmpty(this.mom) && this.mom.id,
           dad: !_.isEmpty(this.dad) && this.dad.id,
@@ -353,6 +387,13 @@
           referrerPolicy: 'no-referrer',
           body: JSON.stringify(data)
         });
+        showToast('Exito', 'La familia ha sido creada exitosamente', 'success');
+        
+        // clear all
+        const els = document.getElementsByClassName('cleanPerson');
+        for(let i=0; i < els.length; i++) {
+          els[i].click();
+        }
       }
     },
     delimiters: ['${', '}']
