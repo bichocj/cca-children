@@ -8,7 +8,7 @@
 <div id="app" class="d-none">
   <div class="card mb-3">
     <div class="card-header">
-      <h3>Don/Doña</h3>
+      <h3>Deja en guarderia Don/Doña</h3>
     </div>
     <div class="card-body">
 
@@ -91,7 +91,7 @@
                 <input type="checkbox" class="custom-control-input" v-model="child.checked">
               </td>
               <td>${child.dni}</td>
-              <td>${child.name}</td>
+              <td>${child.name} ${child.lastName}</td>
               <td>${child.dateOfBirth ? getAge(child.dateOfBirth) : '-'}</td>
               <td>${child.relationship}</td>
             </tr>
@@ -124,7 +124,7 @@
 
   
   <div class="text-center mb-5">
-    <button class="btn btn-primary btn-lg" v-on:click="saveAndPrint">Guardar</button>
+    <button class="btn btn-primary btn-lg" v-on:click="saveAndPrint">Guardar e Imprimir</button>
   </div>  
 </div>
 {% endblock %}
