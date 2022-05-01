@@ -1,14 +1,11 @@
 {% extends 'web/layout.html' %}
 {% block container %}
-    hello world web
-
   {% if user.is_authenticated %}
     Hi {{ user.username }}!
-    <p><a href="{% url 'logout' %}">Log Out</a></p>
-    <p><a href="{% url 'password_reset' %}">Reset Password</a></p>
-  {% else %}
-    <p>You are not logged in</p>
-    <a href="{% url 'login' %}">Log In</a>
+    <p><a href="{% url 'logout' %}">Salir</a></p>
+    {% else %}
+    <a href="{% url 'login' %}" class="btn btn-primary">Iniciar sesion</a>
+    <p><a href="{% url 'password_reset' %}">Resetear Contraseña</a></p>
   {% endif %}
     
 {% endblock %}

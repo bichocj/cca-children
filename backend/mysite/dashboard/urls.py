@@ -8,10 +8,9 @@ from . import views
 app_name = 'dashboard'
 
 urlpatterns = [
-  path('', login_required(TemplateView.as_view(template_name="dashboard/index.html"))),
+  path('', login_required(TemplateView.as_view(template_name="dashboard/attendance.html")), name='attendance'),  
   path('family/', login_required(TemplateView.as_view(template_name="dashboard/family.html")), name='family'),
   path('family/create/', views_people.family_create, name='family_create'),
-  path('attendance/', login_required(TemplateView.as_view(template_name="dashboard/attendance.html")), name='attendance'),  
   path('attendance/create/', views_attendance.create, name='attendance_create'),
   path('people/', views_people.show_all, name='people_show_all'),
   path('people/create/', views_people.create, name='people_create'),

@@ -1,4 +1,5 @@
 import json
+from pyexpat import model
 from urllib import response
 import requests
 from django.shortcuts import redirect, render
@@ -28,6 +29,7 @@ def create(request):
 def show_details(request, dni):
   try:
     person = models.Person.objects.get(dni=dni)
+    relations = models.ChildSib.objects.select_related('child').filter(sib=person)
     return render(request, 'dashboard/people/show_details.html', locals())
   except models.Person.DoesNotExist:
     return redirect(reverse('dashboard:people_show_all'))

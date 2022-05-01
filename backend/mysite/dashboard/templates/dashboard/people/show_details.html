@@ -34,6 +34,29 @@
           </tbody>
         </table>
     </div>
+    <div class="card-body">
+        
+        <table class="table" id="example">
+          <thead>
+            <tr>
+              <th>DNI</th>
+              <th>Nombres</th>
+              <th>Relacion</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>          
+            {% for relation in relations %}
+            <tr>
+              <td>{{relation.child.dni}}</td>
+              <td>{{relation.child.name}}</td>
+              <td>{{relation.get_relationship_down_display}}</td>
+              <td><a class="btn btn-light">quitar</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
   </div>
 </div>
 {% endblock %}
