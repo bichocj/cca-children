@@ -46,7 +46,6 @@ def show_details(request, dni):
     return redirect(reverse('dashboard:people_show_all'))
 
 def family_create(request):
-  import pdb; pdb.set_trace()
   try:
     body = json.loads(request.body)
     children = body['children']
