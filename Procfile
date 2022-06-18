@@ -1,2 +1,2 @@
-release: ./bin/release.sh
+release: ./release.sh
 web: cd backend/mysite ; gunicorn mysite.wsgi --log-file -
