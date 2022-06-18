@@ -1,0 +1,50 @@
+{% extends 'dashboard/layout.html' %}
+{% block container %}
+<div id="app">
+  <h2>Asistencia - Liberar Niños Salvajes</h2>
+  <br>
+  <div class="d-md-flex justify-content-around">
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3>Codigo para recojer a los niños</h3>
+      </div>
+      <div class="card-body">
+        <form action="." method="post">
+          {% csrf_token %}
+          <div class="input-group mb-3">
+            <label class="input-group-text" for="inputGroupSelect01" >CODIGUITO</label>
+            <input class="form-control" name="code" type="number" required>
+            <button class="btn btn-primary" type="submit" id="button-addon2">
+              Buscar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    </div>
+      <hr>
+
+      {% if attendance %}
+      Dejo a los niños: {{ attendance.parent_a.name }}  ( <span>&#9742;</span> {{ attendance.parent_a.cellphone|default:'' }} )
+      <br>
+      Recoje a los niños: {{ attendance.parent_b.name }} ( <span>&#9742;</span> {{ attendance.parent_b.cellphone|default:'' }} )
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Salon</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in details %}
+            <tr>
+              <td>{{ d.child.name }}</td>
+              <td>{{ d.space.name }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    
+</div>
+{% endblock %}
