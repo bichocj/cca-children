@@ -42,9 +42,9 @@
   
           <div class="collapse navbar-collapse justify-content-md-end" id="navbarsExample09">
             <ul class="navbar-nav mb-2 mb-lg-0">                            
-              {% if user.is_superuser %}<li class="nav-item"><a href="{% url 'dashboard:attendance' %}" class="nav-link">Ingreso</a></li>{% endif %}
-              {% if user.is_superuser %}<li class="nav-item"><a href="{% url 'dashboard:attendance_leave' %}" class="nav-link">Salida</a></li>{% endif %}
-              {% if user.is_superuser %}<li class="nav-item"><a href="{% url 'dashboard:people_show_all' %}" class="nav-link">Personas</a></li>{% endif %}
+              {% if user %}<li class="nav-item"><a href="{% url 'dashboard:attendance' %}" class="nav-link">Ingreso</a></li>{% endif %}
+              {% if user %}<li class="nav-item"><a href="{% url 'dashboard:attendance_leave' %}" class="nav-link">Salida</a></li>{% endif %}
+              {% if user %}<li class="nav-item"><a href="{% url 'dashboard:people_show_all' %}" class="nav-link">Personas</a></li>{% endif %}
               
               
               {% if user.is_authenticated %}

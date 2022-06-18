@@ -3,7 +3,9 @@ from django.http import JsonResponse
 from . import models
 from django.shortcuts import redirect, render
 from django.db.models import Count
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def create(request):
   spaces = models.Space.objects.all()
   for space in spaces:
@@ -13,6 +15,7 @@ def create(request):
     pass
   return render(request, 'dashboard/attendance_in.html', locals())
 
+@login_required
 def leave(request):
   if request.POST:
     code = request.POST.get('code')
