@@ -21,7 +21,6 @@ def create(request):
 
 @login_required
 def leave(request):
-  import pdb;pdb.set_trace()
   if request.POST:
     code = request.POST.get('code')
     codeparsed = int(code) / 13
