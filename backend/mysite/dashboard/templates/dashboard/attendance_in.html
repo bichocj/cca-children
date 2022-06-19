@@ -482,12 +482,10 @@
         }
 
         if(_.isEmpty(this.parentA.email)) {
-          showToast('Advertencia', `${this.parentA.name} no tiene correo, no le podrá llegar el codigo`, 'warning')
-          return;
+          showToast('Advertencia', `${this.parentA.name} no tiene correo, deberá mostrar su DNI`, 'warning')          
         }
         if(_.isEmpty(this.parentB.email)) {
-          showToast('Advertencia', `${this.parentB.name} no tiene correo, no le podrá llegar el codigo`, 'warning')
-          return;
+          showToast('Advertencia', `${this.parentB.name} no tiene correo, deberá mostrar su DNI`, 'warning')          
         }
         const csrftoken = Cookies.get('csrftoken');
         children = children.map(c => ({id: c.id, spaceId: this.currentSpace}));

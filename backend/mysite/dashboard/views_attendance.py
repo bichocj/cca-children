@@ -63,17 +63,23 @@ def save(request):
 
     models.AttendanceDetail.objects.bulk_create(details, ignore_conflicts=True)
 
+    to_email = []
+    if parent_a.email:
+      to_email.append(parent_a.email)    
+    if parent_b.email:
+      to_email.append(parent_b.email)
     
-    context = { 'code': attendance.id * 13 }
-    plaintext = loader.get_template('email/register.txt')
-    htmly = loader.get_template('email/register.html')
-    text_content = plaintext.render(context)
-    html_content = htmly.render(context)
-    
-    from_email = settings.FROM_EMAIL
-    to_email = [parent_a.email,]
-    subject = 'La Comunidad | Junior'
-    send_mail(subject, '', from_email, to_email, fail_silently=True, html_message=html_content)    
+    if len(to_email) > 0: 
+      context = { 'code': attendance.id * 13 }
+      plaintext = loader.get_template('email/register.txt')
+      htmly = loader.get_template('email/register.html')
+      text_content = plaintext.render(context)
+      html_content = htmly.render(context)
+      
+      from_email = settings.FROM_EMAIL
+      
+      subject = 'La Comunidad | Junior'
+      send_mail(subject, '', from_email, to_email, fail_silently=True, html_message=html_content)    
     return JsonResponse({'success': True})
   except Exception as e:
     print(e)
