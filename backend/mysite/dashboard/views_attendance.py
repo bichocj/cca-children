@@ -27,10 +27,10 @@ def leave(request):
     children = request.POST.getlist('children[]')
     try:
       attendance = models.Attendance.objects.get(id=codeparsed)
-      details = models.AttendanceDetail.objects.filter(attendance=attendance)
+      details = models.AttendanceDetail.objects.filter(attendance=attendance)      
       if children:
         for d in details:
-          if d.child in children:
+          if str(d.id) in children:
             d.end_at = datetime.now()
             d.save()
       

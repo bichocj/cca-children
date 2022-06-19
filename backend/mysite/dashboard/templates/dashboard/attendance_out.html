@@ -6,7 +6,7 @@
   <div class="d-md-flex justify-content-around">
     <div class="card mb-3">
       <div class="card-header">
-        <h3>Codigo para recojer a los niños</h3>
+        <h4>Codigo para recojer a los niños</h4>
       </div>
       <div class="card-body">
         <form action="." method="post">
@@ -25,9 +25,9 @@
       <hr>
 
       {% if attendance %}
-      <h3>Dejo a los niños: {{ attendance.parent_a.name }}  ( <span>&#9742;</span> {{ attendance.parent_a.cellphone|default:'' }} )</h3>
+      <h5>Dejo a los niños: {{ attendance.parent_a.name }}  - {{ attendance.parent_a.dni }}( <span>&#9742;</span> {{ attendance.parent_a.cellphone|default:'' }} )</h5>
       <br>
-      <h3>Recoge a los niños: {{ attendance.parent_b.name }}  ( <span>&#9742;</span> {{ attendance.parent_b.cellphone|default:'' }} )</h3>
+      <h5>Recoge a los niños: {{ attendance.parent_b.name }} - {{ attendance.parent_b.dni }}  ( <span>&#9742;</span> {{ attendance.parent_b.cellphone|default:'' }} )</h5>
       <br>
       <form method="post" action=".">
         {% csrf_token %}
@@ -38,16 +38,24 @@
               <th></th>
               <th>Nombre</th>
               <th>Salon</th>
+              <th>Dejado a las</th>
+              <th>Recogido a las</th>
             </tr>
           </thead>
           <tbody>
             {% for d in details %}
             <tr>
               <td>
-                <input type="checkbox" class="custom-control-input" value="{{d.id}}" name="children[]">
+                <input type="checkbox" class="custom-control-input" value="{{d.id}}" name="children[]" {% if d.end_at%} checked disabled {% endif %}>
               </td>
-              <td>{{ d.child.name }}</td>
+              <td>
+                {% if d.end_at %}<del>{% endif %}
+                {{ d.child.name }}
+                {% if d.end_at %}</del>{% endif %}
+              </td>
               <td>{{ d.space.name }}</td>
+              <td>{{ d.start_at }}</td>
+              <td>{{ d.end_at|default:'' }}</td>
             </tr>
             {% endfor %}
           </tbody>
