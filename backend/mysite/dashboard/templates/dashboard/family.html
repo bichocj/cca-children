@@ -62,14 +62,14 @@
   <div class="d-md-flex justify-content-around">
     <div class="card mb-3">
       <div class="card-header">
-        <h3>Otros familiares que pueden recoger a sus niños/as</h3>
+        <h3>Otros familiares</h3>
       </div>
       <div class="card-body">
         <parent-searching 
           v-for="(child, index) in others"
           :key="child.guid"
           :id="child.guid"
-          :use-pattern-ship="true" 
+          :use-pattern-ship="true"
           :on-change="updateOthers"
         />
       </div>
@@ -122,8 +122,8 @@
               <div class="col-sm-8">
                 <input 
                   type="text" 
-                  class="form-control" 
-                  placeholder="ingrese nro de Celular"                 
+                  class="form-control"
+                  placeholder="ingrese nro de Celular"
                   v-model='parent.cellphone'
                 />
               </div>
@@ -154,9 +154,19 @@
                 <small>mes / dia / año</small>
               </div>
             </div>
-
-            
-            <small v-if="spaceSelected.id"> ${spaceSelected.name} es el recomendado para niños de ${spaceSelected.min} a ${spaceSelected.max} años de edad </small>
+            <div class="mb-3 row" v-if="usePatternShip">
+              <label for="staticEmail" class="col-sm-4 col-form-label">Parentesco</label>
+              <div class="col-sm-8">
+                <select class="form-select" id="inputGroupSelect02" v-model='parent.relationship.id'>
+                  <option selected>selecciona uno</option>
+                  <option value="3">hermano/a</option>
+                  <option value="4">tio/a</option>
+                  <option value="5">abuelo/a</option>
+                  <option value="6">primo/a</option>
+                  <option value="7">sobrino/</option>
+                </select>
+              </div>
+            </div>
             
           </div>
           <div class="modal-footer">
@@ -204,7 +214,8 @@
             <th>Nombre</th>
             <th v-if="useCellphone">Celular</th>
             <th v-if="useEmail">Email</th>
-            <th v-if="useDateOfBirth">Fecha de Nacimiento</th>            
+            <th v-if="useDateOfBirth">Fecha de Nacimiento</th>
+            <th v-if="usePatternShip">Parentesco</th>
             <th></th>
           </tr>
         </thead>
@@ -220,6 +231,9 @@
             </td>
             <td v-if="useDateOfBirth">
               ${_.isEmpty(parent.dateOfBirth) ? 'Sin fecha' : parent.dateOfBirth }
+            </td>
+            <td v-if="usePatternShip">
+              ${!parent.relationship.id ? 'Sin especificar' : parent.relationship.name }
             </td>
             <td> 
               <button 
@@ -289,6 +303,10 @@
           dateOfBirth: null,
           spaceId: null,
           email: null,
+          relationship: {
+            id: null,
+            name: null
+          },
         },
         searching: false,        
         modal: null,
@@ -332,6 +350,20 @@
         if (space !== this.spaceSelected) {
           this.spaceSelected = space;
         }
+      },
+      'parent.relationship.id': function() {
+        if(!this.parent.relationship.id) {
+          this.parent.relationship.name = null;
+          return;  
+        }
+        const relations = {
+          3: 'hermano/a',
+          4: 'tio/a',
+          5: 'abuelo/a',
+          6: 'primo/a',
+          7: 'sobrino/a',
+        };
+        this.parent.relationship.name = relations[this.parent.relationship.id];
       }
     },
     created: function() {
@@ -438,7 +470,6 @@
         this.dad = parent;
       },
       updateChildren(parent, guid, isUpdate=false) {
-        console.log('called updateChildren')
         const index = this.children.findIndex(o => o.guid === guid);
         if(parent?.id) {
           this.children[index] = {...parent, guid};
@@ -449,33 +480,40 @@
           this.children.splice(index, 1);
         }
       },
-      updateOthers(parent, guid) {
-        if(parent.dni) {
-          const lastIndex = this.others.length - 1;
-          this.others[lastIndex] = {...parent, ...this.others[lastIndex]};
-          this.others.push({guid: `i${Math.random()}`});
-        } else {
-          for(let i = 0; i < this.others.length; i++) {
-            if(this.others[i].guid === guid) {
-              this.others.splice(i, 1);
-              break;
-            }
+      updateOthers(parent, guid, isUpdate=false) {        
+        const index = this.others.findIndex(o => o.guid === guid);
+        if(parent?.id) {
+          this.others[index] = {...parent, guid};
+          if(!isUpdate) {
+            this.others.push({guid: `i${Math.random()}`});
           }
+        } else {
+          this.others.splice(index, 1);
         }
       },
       async saveAll() {
+        
         const csrftoken = Cookies.get('csrftoken');        
         if((_.isEmpty(this.mom) || _.isEmpty(this.dad) || this.others.length === 1) && this.children.length === 1) {
           showToast('Advertencia', 'Complete los campos', 'warning')
           return;
         }
+        
+        
+        for(const o of this.others){
+          if(o.id && !o.relationship.id) {
+            showToast('Advertencia', `${o.name} no tiene el campo parentesco llenado`, 'warning')
+            return;
+          }
+        }
+
         const data = {
           mom: !_.isEmpty(this.mom) && this.mom.id,
           dad: !_.isEmpty(this.dad) && this.dad.id,
           children: this.children.filter(c => c.id).map(c => c.id),
-          others: this.others.filter(c => c.id).map(c => c.id),
+          others: this.others.filter(c => c.id).map(c => ({id: c.id, relationshipId: c?.relationship?.id})),
         }
-
+        
         const response = await fetch('/dashboard/family/create/', {
           method: 'POST',
           credentials: 'same-origin',

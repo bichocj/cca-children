@@ -45,6 +45,13 @@ def show_details(request, dni):
   except models.Person.DoesNotExist:
     return redirect(reverse('dashboard:people_show_all'))
 
+ROL_CHOICES = {
+        '3': 3,
+        '4': 7,
+        '5': 10,
+        '6': 6,
+      }
+
 def family_create(request):
   body = json.loads(request.body)
   children = body['children'];
@@ -60,7 +67,18 @@ def family_create(request):
     if dad:
       objs.append(models.ChildSib(child=models.Person(id=child), sib=models.Person(id=dad), relationship_up=2, relationship_down=8))
     for other in others:
-      objs.append(models.ChildSib(child=models.Person(id=child), sib=models.Person(id=other), relationship_up=5, relationship_down=10))
+      other_id = other.get('id')
+      relationship_id = other.get('relationshipId')
+      relationship_down=ROL_CHOICES[str(relationship_id)]
+
+      objs.append(
+        models.ChildSib(
+          child=models.Person(id=child), 
+          sib=models.Person(id=other_id), 
+          relationship_up=relationship_id, 
+          relationship_down=relationship_down
+        )
+      )
   
   models.ChildSib.objects.bulk_create(objs, ignore_conflicts=True)
   
