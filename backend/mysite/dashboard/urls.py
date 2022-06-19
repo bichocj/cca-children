@@ -10,7 +10,10 @@ app_name = 'dashboard'
 urlpatterns = [
   path('', views_attendance.create, name='attendance'),
   path('out/', views_attendance.leave, name='attendance_leave'),  
-  path('family/create/', views_people.family_create, name='family_create'),  
+  path('attendance/save/', views_attendance.save, name='attendance_save'),
+
+  path('family/', login_required(TemplateView.as_view(template_name="dashboard/family.html")), name='family'),
+  path('family/create/', views_people.family_create, name='family_create'),
   path('people/', views_people.show_all, name='people_show_all'),
   path('people/create/', views_people.create, name='people_create'),
   path('people/create-person/', views_people.create_person, name='people_create_person'),

@@ -46,41 +46,25 @@ def show_details(request, dni):
     return redirect(reverse('dashboard:people_show_all'))
 
 def family_create(request):
-  try:
-    body = json.loads(request.body)
-    children = body['children']
-    parent_a_id = body['parentA']
-    parent_b_id = body['parentB']
+  body = json.loads(request.body)
+  children = body['children'];
+  others = body['others'];
+  mom = body['mom'];
+  dad = body['dad'];
 
-    parent_a = models.Person.objects.get(id=parent_a_id)
-    parent_b = models.Person.objects.get(id=parent_b_id)
+  objs = []
 
-    attendance = models.Attendance.objects.create(parent_a=parent_a, parent_b=parent_b)
-
-    details = []
-    for child in children:
-      id = child['id']
-      spaceId = child['spaceId']
-      details.append(models.AttendanceDetail(child=models.Person(id=id),space=models.Space(id=spaceId), attendance=attendance))
-
-    models.AttendanceDetail.objects.bulk_create(details, ignore_conflicts=True)
-
-    
-    context = { 'code': attendance.id * 13 }
-    plaintext = loader.get_template('email/register.txt')
-    htmly = loader.get_template('email/register.html')
-    text_content = plaintext.render(context)
-    html_content = htmly.render(context)
-    
-    from_email = settings.FROM_EMAIL
-    to_email = [parent_a.email, parent_b.email]
-    subject = 'La Comunidad | Junior'
-    send_mail(subject, '', from_email, to_email, fail_silently=True, html_message=html_content)    
-
-
-    return JsonResponse({'success': True})
-  except:
-    return JsonResponse({'success': False})
+  for child in children:
+    if mom:
+      objs.append(models.ChildSib(child=models.Person(id=child), sib=models.Person(id=mom), relationship_up=1, relationship_down=8))
+    if dad:
+      objs.append(models.ChildSib(child=models.Person(id=child), sib=models.Person(id=dad), relationship_up=2, relationship_down=8))
+    for other in others:
+      objs.append(models.ChildSib(child=models.Person(id=child), sib=models.Person(id=other), relationship_up=5, relationship_down=10))
+  
+  models.ChildSib.objects.bulk_create(objs, ignore_conflicts=True)
+  
+  return JsonResponse({'success': True})
 
 
 @login_required

@@ -1,7 +1,7 @@
 {% extends 'dashboard/layout.html' %}
 {% block container %}
 <div id="app">
-  <h2>Asistencia - Liberar Niños Salvajes</h2>
+  <h2>Asistencia - Salida de Niños</h2>
   <br>
   <div class="d-md-flex justify-content-around">
     <div class="card mb-3">
@@ -25,12 +25,17 @@
       <hr>
 
       {% if attendance %}
-      Dejo a los niños: {{ attendance.parent_a.name }}  ( <span>&#9742;</span> {{ attendance.parent_a.cellphone|default:'' }} )
+      <h3>Dejo a los niños: {{ attendance.parent_a.name }}  ( <span>&#9742;</span> {{ attendance.parent_a.cellphone|default:'' }} )</h3>
       <br>
-      Recoje a los niños: {{ attendance.parent_b.name }} ( <span>&#9742;</span> {{ attendance.parent_b.cellphone|default:'' }} )
+      <h3>Recoge a los niños: {{ attendance.parent_b.name }}  ( <span>&#9742;</span> {{ attendance.parent_b.cellphone|default:'' }} )</h3>
+      <br>
+      <form method="post" action=".">
+        {% csrf_token %}
+        <input type="hidden" name="code" value="{{code}}">
         <table class="table">
           <thead>
             <tr>
+              <th></th>
               <th>Nombre</th>
               <th>Salon</th>
             </tr>
@@ -38,13 +43,17 @@
           <tbody>
             {% for d in details %}
             <tr>
+              <td>
+                <input type="checkbox" class="custom-control-input" value="{{d.id}}" name="children[]">
+              </td>
               <td>{{ d.child.name }}</td>
               <td>{{ d.space.name }}</td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
+        <button class="btn btn-primary" type="submit">Marcar Salida</button>
+      </form>
       {% endif %}
-    
 </div>
 {% endblock %}

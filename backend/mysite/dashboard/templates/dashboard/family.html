@@ -1,0 +1,507 @@
+{% extends 'dashboard/layout.html' %}
+{% block more_styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/solid.min.css">
+{% endblock %}
+{% block container %}
+<div id="app" class="d-none">
+  <h2>Familia, crear/actualizar</h2>
+  <br>
+
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <!--<div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">-->
+    <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto" id="toastTitle">Aviso</strong>        
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body" id="toastBody">
+      </div>
+    </div>
+  </div>
+
+  <div class="d-md-flex justify-content-around">
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3>Mamá</h3>
+      </div>
+      <div class="card-body">
+        <parent-searching :on-change="updateMom" id="first"/>
+      </div>
+    </div>
+  </div>
+  <div class="d-md-flex justify-content-around">
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3>Papá</h3>
+      </div>
+      <div class="card-body">        
+        <parent-searching use-cellphone :on-change="updateDad" id="second"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-md-flex justify-content-around">
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3>Hijos/as</h3>
+      </div>
+      <div class="card-body">
+          <parent-searching
+            v-for="(child, index) in children"
+            :key="child.guid"
+            :id="child.guid"
+            :use-cellphone="false" 
+            :use-email="false" 
+            :use-date-of-birth="true" 
+            :on-change="updateChildren" />
+      </div>
+    </div>
+  </div>
+  
+  <div class="d-md-flex justify-content-around">
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3>Otros familiares que pueden recoger a sus niños/as</h3>
+      </div>
+      <div class="card-body">
+        <parent-searching 
+          v-for="(child, index) in others"
+          :key="child.guid"
+          :id="child.guid"
+          :use-pattern-ship="true" 
+          :on-change="updateOthers"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mb-5">
+    <button class="btn btn-primary btn-lg" v-on:click="saveAll">Guardar</button>
+  </div>
+</div>
+
+
+<script type="text/x-template" id="person-searching">
+  <div>
+    <div class="modal fade" v-bind:class="id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">${parent.id ? 'Editar': 'Crear'} Persona</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">                      
+            <div class="mb-3 row">
+              <label for="staticEmail" class="col-sm-4 col-form-label">DNI</label>
+              <div class="col-sm-8">
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="ingrese nro de DNI"
+                  v-model='parent.dni'
+                />
+                <small>No requerido</small>
+              </div>
+            </div>
+
+            <div class="mb-3 row">
+              <label for="staticEmail" class="col-sm-4 col-form-label">Nombre</label>
+              <div class="col-sm-8">
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="ingrese el nombre completo"
+                  v-model='parent.name'
+                />
+              </div>
+            </div>
+
+            <div class="mb-3 row" v-if="useCellphone">
+              <label for="staticEmail" class="col-sm-4 col-form-label">Celular</label>
+              <div class="col-sm-8">
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="ingrese nro de Celular"                 
+                  v-model='parent.cellphone'
+                />
+              </div>
+            </div>
+
+            
+            <div class="mb-3 row" v-if="useEmail">
+              <label for="staticEmail" class="col-sm-4 col-form-label">Email</label>
+              <div class="col-sm-8">
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  placeholder="ingrese nro de Celular"                 
+                  v-model='parent.email'
+                />
+              </div>
+            </div>
+
+            <div class="mb-3 row" v-if="useDateOfBirth">
+              <label for="staticEmail" class="col-sm-4 col-form-label">Fecha de Nacimiento</label>
+              <div class="col-sm-8">
+                <input 
+                  type="date" 
+                  class="form-control" 
+                  placeholder="ingrese nro de Celular"                 
+                  v-model='parent.dateOfBirth'
+                />
+                <small>mes / dia / año</small>
+              </div>
+            </div>
+
+            
+            <small v-if="spaceSelected.id"> ${spaceSelected.name} es el recomendado para niños de ${spaceSelected.min} a ${spaceSelected.max} años de edad </small>
+            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <button type="button" class="btn btn-primary"  v-on:click="savePerson()">${parent.id ? 'Actualizar': 'Guardar'}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Fin Modals -->
+
+
+    <div v-if="!parent.name">
+      <div class="input-group mb-3">
+        <label class="input-group-text" for="inputGroupSelect01">DNI</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          placeholder="ingrese nro de dni" 
+          aria-label="nro de dni" 
+          aria-describedby="button-addon2"            
+          v-model='parent.dni'
+          v-on:keyup.enter='searchPerson()'
+        >
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <button 
+            class="btn btn-outline-secondary" 
+            type="button" 
+            id="button-addon2"
+            v-on:click="searchPerson()"
+            :disabled="searching"
+          >
+            Buscar
+            <i class="fas fa-circle-notch fa-spin" v-if="searching"></i>
+          </button>
+          <button type="button" class="btn btn-outline-secondary" v-on:click="openModal()">Crear</button>
+        </div>
+      </div>
+    </div>
+    <div v-if="!searching && parent.name">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>DNI</th>
+            <th>Nombre</th>
+            <th v-if="useCellphone">Celular</th>
+            <th v-if="useEmail">Email</th>
+            <th v-if="useDateOfBirth">Fecha de Nacimiento</th>            
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>${parent.dni}</td>
+            <td>${parent.name}</td>
+            <td v-if="useCellphone">
+              ${_.isEmpty(parent.cellphone) ? 'Sin numero' : parent.cellphone }
+            </td>
+            <td v-if="useEmail">
+              ${_.isEmpty(parent.email) ? 'Sin email' : parent.email }
+            </td>
+            <td v-if="useDateOfBirth">
+              ${_.isEmpty(parent.dateOfBirth) ? 'Sin fecha' : parent.dateOfBirth }
+            </td>
+            <td> 
+              <button 
+                type="button" 
+                class="btn btn-outline-secondary editPerson"
+                title="quitar persona"
+                v-on:click="openModal"
+              >
+                Editar
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-outline-danger cleanPerson"
+                title="quitar persona"
+                v-on:click="cleanPerson"
+              >
+                Quitar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</script>
+{% endblock %}
+{% block more_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/lodash.isempty@4.4.0/index.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+  var spaces = [];
+  {% for class in spaces %} 
+    spaces.push({name: '{{class.name}}', id: '{{class.id}}', max: {{class.max_age}}, min: {{class.min_age}}, current: {{class.current}}, capacity: {{class.capacity}} });
+  {% endfor %} 
+  var $toast;
+
+  var $toast;
+  function showToast(title, subtitle, type='primary') {
+    const myToastEl = document.getElementById('liveToast');
+    const myToastTitleEl = document.getElementById('toastTitle');
+    const myToastBodyEl = document.getElementById('toastBody');
+    myToastEl.classList.remove(`bg-${myToastEl.dataset.lastType}`);
+    myToastEl.classList.add(`bg-${type}`);
+    myToastEl.dataset.lastType = type;
+    myToastTitleEl.innerText = title;
+    myToastBodyEl.innerText = subtitle;
+    $toast.show();
+  }
+
+  document.onreadystatechange = () => {
+    if (document.readyState == "complete") {
+      document.getElementById('app')?.classList.remove('d-none');
+      const myToastEl = document.getElementById('liveToast');
+      $toast = bootstrap.Toast.getOrCreateInstance(myToastEl)
+    }
+  }
+  
+  Vue.component('parent-searching', {    
+    data: function () {
+      return {
+        parent: {
+          id: null,
+          dni: null,
+          cellphone: null,
+          dateOfBirth: null,
+          spaceId: null,
+          email: null,
+        },
+        searching: false,        
+        modal: null,
+        spaces: [],
+        spaceSelected: { id: null},
+      }
+    },
+    props: {
+      id: String,
+      useCellphone: {
+        type: Boolean,
+        default: true
+      },
+      useEmail: {
+        type: Boolean,
+        default: true
+      },
+      useDateOfBirth: {
+        type: Boolean,
+        default: false
+      },
+      usePatternShip: {
+        type: Boolean,
+        default: false
+      },
+      onChange: {
+        type: Object
+      }
+    },
+    watch: {
+      'parent.dateOfBirth': function() {
+        const age = this.getAge(this.parent.dateOfBirth);
+        const space = this.spaces.find(s => s.min <= age && age <= s.max);
+        if (space) {
+          this.spaceSelected = space;
+          this.parent.spaceId = space.id;
+        }
+      },
+      'parent.spaceId': function() {
+        const space = this.spaces.find(s => s.id === this.parent.spaceId)
+        if (space !== this.spaceSelected) {
+          this.spaceSelected = space;
+        }
+      }
+    },
+    created: function() {
+      this.spaces = spaces
+    },
+    methods: {
+      getAge: function(dateString) {
+        var today = new Date();
+        var birthDate = new Date(dateString);
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+      },
+      isValidDni: function(dni) {
+        if(_.isEmpty(dni)) {
+          showToast('Advertencia', 'DNI invalido', 'danger');
+          return false;
+        }
+        if(dni.length !== 8) {
+          showToast('Advertencia', 'DNI invalido', 'danger');
+          return false;
+        }
+        return true;
+      },
+      openModal: function() {
+        const ref = document.getElementsByClassName(this.id)[0]
+        modal = new bootstrap.Modal(ref)
+        modal.show()
+      },
+      savePerson: async function() {
+        const csrftoken = Cookies.get('csrftoken');        
+        let response = await fetch('/dashboard/people/create-person/', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            "X-CSRFToken": csrftoken,
+            "Accept": "application/json",
+            'Content-Type': 'application/json'
+          },
+          redirect: 'follow',
+          body: JSON.stringify({parent: this.parent})
+        });
+        response = await response.json();
+        modal.hide();
+        if(response.success) {
+          const isUpdate = this.parent.id !== null;
+          this.parent.id = response.id;
+          this.onChange(this.parent, this.id, isUpdate);
+        }
+      },
+      searchPerson: function () {
+        this.searching = true;
+        if(this.isValidDni(this.parent.dni)) {
+          fetch(`/dashboard/get-person/${this.parent.dni}/?commit=true`).then( async(r) => {
+            if(r.status === 200) {
+              const {name, email, cellphone, date_of_birth, id} = await r.json()
+              this.parent.name = name;
+              this.parent.cellphone = cellphone;
+              this.parent.dateOfBirth = date_of_birth;
+              this.parent.email = email;
+              this.parent.id = id;
+              const age = this.getAge(this.parent.dateOfBirth);
+              const space = this.spaces.find(s => s.min <= age && age <= s.max);
+              if (space) {
+                this.spaceSelected = space;
+                this.parent.spaceId = space.id;
+              }
+              this.onChange(this.parent, this.id);
+            } else {
+              alert('Persona no encontrada');
+            }
+            this.searching = false;
+          });
+        } else {
+          this.searching = false;
+        }
+      },
+      cleanPerson: function() {
+        this.parent = {dni:null, searching: false};
+        this.onChange({}, this.id);
+      }
+    },
+    template: "#person-searching",
+    delimiters: ['${', '}']
+  })
+
+  var app = new Vue({
+    el: '#app',
+    data: {
+      message: 'Hello Vue!',
+      mom: {},
+      dad: {},
+      children: [{guid: `i${Math.random()}`,}],
+      others: [{guid: `i${Math.random()}`}],      
+    },
+    methods: {
+      updateMom(parent) {
+        this.mom = parent;
+      },
+      updateDad(parent) {
+        this.dad = parent;
+      },
+      updateChildren(parent, guid, isUpdate=false) {
+        console.log('called updateChildren')
+        const index = this.children.findIndex(o => o.guid === guid);
+        if(parent?.id) {
+          this.children[index] = {...parent, guid};
+          if(!isUpdate) {
+            this.children.push({guid: `i${Math.random()}`});
+          }
+        } else {
+          this.children.splice(index, 1);
+        }
+      },
+      updateOthers(parent, guid) {
+        if(parent.dni) {
+          const lastIndex = this.others.length - 1;
+          this.others[lastIndex] = {...parent, ...this.others[lastIndex]};
+          this.others.push({guid: `i${Math.random()}`});
+        } else {
+          for(let i = 0; i < this.others.length; i++) {
+            if(this.others[i].guid === guid) {
+              this.others.splice(i, 1);
+              break;
+            }
+          }
+        }
+      },
+      async saveAll() {
+        const csrftoken = Cookies.get('csrftoken');        
+        if((_.isEmpty(this.mom) || _.isEmpty(this.dad) || this.others.length === 1) && this.children.length === 1) {
+          showToast('Advertencia', 'Complete los campos', 'warning')
+          return;
+        }
+        const data = {
+          mom: !_.isEmpty(this.mom) && this.mom.id,
+          dad: !_.isEmpty(this.dad) && this.dad.id,
+          children: this.children.filter(c => c.id).map(c => c.id),
+          others: this.others.filter(c => c.id).map(c => c.id),
+        }
+
+        const response = await fetch('/dashboard/family/create/', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            "X-CSRFToken": csrftoken,
+            "Accept": "application/json",
+            'Content-Type': 'application/json'
+          },
+          redirect: 'follow', // manual, *follow, error
+          // referrerPolicy: 'no-referrer',
+          body: JSON.stringify(data)
+        });
+        showToast('Exito', 'La familia ha sido creada exitosamente', 'success');
+        
+        // clear all
+        /*
+        const els = document.getElementsByClassName('cleanPerson');
+        for(let i=0; i < els.length; i++) {
+          els[i].click();
+        }*/
+        setTimeout(window.location.reload.bind(window.location), 3000);
+
+      }
+    },
+    delimiters: ['${', '}']
+  })
+</script>
+
+{% endblock %}
