@@ -145,9 +145,8 @@
                     }
                     modalBody.classList.remove('bg-warning')
                     modalBody.classList.add(modalBodyExtraClass)
-                }).catch(async (e) => {
-                    modalBody.innerHTML = `Persona ya ingreso, o codigo no encontrado`;
-                    console.log(response)
+                }).catch(async (e) => {                    
+                    modalBody.innerHTML = `Codigo no encontrado ${id}`;
                     modalBody.classList.remove('bg-warning')
                     modalBody.classList.add(modalBodyExtraClass)
                 })
