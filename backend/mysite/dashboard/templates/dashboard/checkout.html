@@ -39,8 +39,7 @@
 </button>
 {% endblock %}
 {% block more_scripts %}
-<script src="{% static 'dashboard/js/html5-qrcode.min.js' %}"></script>
-<!-- <script src="https://blog.minhazav.dev/assets/research/html5qrcode/html5-qrcode.min.js"></script> -->
+<script src="{% static 'dashboard/js/html5-qrcode2.min.js' %}"></script>
 <script>
 
     const btnModal = document.getElementById('btnModal');
@@ -86,6 +85,8 @@
                     } else {
                         const data = await r.json();
                         if (r.status === 200) {
+                            console.log('data:::')
+                            console.log(data)
                             modalBody.innerHTML = `Ok, persona autorizada`;
                             modalBodyExtraClass = 'bg-success';
                         }
@@ -132,6 +133,7 @@
                             modalBody.innerHTML = data.message;
                         }
                         if (r.status === 200) {
+                            console.log(data);
                             modalBody.innerHTML = `Ok, persona autorizada`;
                             modalBodyExtraClass = 'bg-success';
                         }
