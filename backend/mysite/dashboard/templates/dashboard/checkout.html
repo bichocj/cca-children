@@ -2,39 +2,40 @@
 {% load static %}
 {% block container %}
 <div class="card mb-3 offset-md-3" style="max-width: 540px;">
-  <div class="card-header">
-    <h4>Verificar Codigo</h4>
-  </div>
-  <div class="card-body">        
-    <div id="reader" width="600px"></div>
-  </div>
-  <div class="card-body">        
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon1">Buscar por DNI</span>
-      <input type="text" class="form-control" placeholder="DNI" id='dni'>
-      <button class="btn btn-primary" type="button" id="button-addon2" onclick="searchByDni()">Buscar</button>
+    <div class="card-header">
+        <h4>Verificar Codigo</h4>
     </div>
-  </div>  
+    <div class="card-body">
+        <div id="reader" width="600px"></div>
+    </div>
+    <div class="card-body">
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Buscar por DNI</span>
+            <input type="text" class="form-control" placeholder="DNI" id='dni'>
+            <button class="btn btn-primary" type="button" id="button-addon2" onclick="searchByDni()">Buscar</button>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Verificacion</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-white" id='modalBody'>
-        ...
-      </div>
-      <div class="modal-footer">        
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
-      </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Verificacion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-white" id='modalBody'>
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-<button id="btnModal" type="button" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
-  Launch demo modal
+<button id="btnModal" type="button" class="btn btn-primary d-none" data-bs-toggle="modal"
+    data-bs-target="#exampleModal">
+    Launch demo modal
 </button>
 {% endblock %}
 {% block more_scripts %}
@@ -42,127 +43,127 @@
 <!-- <script src="https://blog.minhazav.dev/assets/research/html5qrcode/html5-qrcode.min.js"></script> -->
 <script>
 
-  const btnModal= document.getElementById('btnModal');
-  const modalBody= document.getElementById('modalBody');
-  const modal= document.getElementById('exampleModal');
-  const dniInput= document.getElementById('dni');
-  var isRequesting = false;
-  var modalBodyExtraClass = '';
+    const btnModal = document.getElementById('btnModal');
+    const modalBody = document.getElementById('modalBody');
+    const modal = document.getElementById('exampleModal');
+    const dniInput = document.getElementById('dni');
+    var isRequesting = false;
+    var modalBodyExtraClass = '';
 
-  function formatAMPM(date) {
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var ampm = hours >= 12 ? 'pm' : 'am';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0'+minutes : minutes;
-    var strTime = hours + ':' + minutes + ' ' + ampm;
-    return strTime;
-  }
+    function formatAMPM(date) {
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        var strTime = hours + ':' + minutes + ' ' + ampm;
+        return strTime;
+    }
 
 
-  function searchByDni() {
-    const dniInputVal = parseInt(dniInput.value);
-    modalBodyExtraClass = 'bg-danger';
-    if (isNaN(dniInputVal) || dniInput.value.length !== 8) {
-      modalBody.innerHTML = `No es un dni valido, intente nuevamente`;
-      modalBody.classList.add(modalBodyExtraClass)
-      btnModal.click();
-    } else {
-      modalBody.innerHTML = `verificando ..., un momento porfavor`;
-      modalBody.classList.add('bg-warning')
-      btnModal.click();
-
-      fetch(`/dashboard/verify-dni/${dniInputVal}/`)
-      .then(async(r) => {
-        if(r.status===404){
-          const date = new Date()
-          date.setHours(date.getHours() - 1)
-          const before = new Date(date)
-          date.setHours(date.getHours() + 2)
-          const after = new Date(date)
-          modalBody.innerHTML = `No se encontró reservación para alguna reunion entre las ${formatAMPM(before)} y las ${formatAMPM(after)} de hoy`;
+    function searchByDni() {
+        const dniInputVal = parseInt(dniInput.value);
+        modalBodyExtraClass = 'bg-danger';
+        if (isNaN(dniInputVal) || dniInput.value.length !== 8) {
+            modalBody.innerHTML = `No es un dni valido, intente nuevamente`;
+            modalBody.classList.add(modalBodyExtraClass)
+            btnModal.click();
         } else {
-          const data = await r.json();
-          if(r.status===200){
-            modalBody.innerHTML = `Ok, persona autorizada`;          
-            modalBodyExtraClass = 'bg-success';
-          }
-          if(r.status===400){
-            modalBody.innerHTML = data.message;
-          }
+            modalBody.innerHTML = `verificando ..., un momento porfavor`;
+            modalBody.classList.add('bg-warning')
+            btnModal.click();
+
+            fetch(`/dashboard/verify-dni/${dniInputVal}/`)
+                .then(async (r) => {
+                    if (r.status === 404) {
+                        const date = new Date()
+                        date.setHours(date.getHours() - 1)
+                        const before = new Date(date)
+                        date.setHours(date.getHours() + 2)
+                        const after = new Date(date)
+                        modalBody.innerHTML = `No se encontró reservación para alguna reunion entre las ${formatAMPM(before)} y las ${formatAMPM(after)} de hoy`;
+                    } else {
+                        const data = await r.json();
+                        if (r.status === 200) {
+                            modalBody.innerHTML = `Ok, persona autorizada`;
+                            modalBodyExtraClass = 'bg-success';
+                        }
+                        if (r.status === 400) {
+                            modalBody.innerHTML = data.message;
+                        }
+                    }
+                    modalBody.classList.remove('bg-warning')
+                    modalBody.classList.add(modalBodyExtraClass)
+                }).catch(async (e) => {
+                    const response = e.json();
+                    modalBody.innerHTML = `Persona ya ingreso, o codigo no encontrado`;
+                    console.log(response)
+                    modalBody.classList.remove('bg-warning')
+                    modalBody.classList.add(modalBodyExtraClass)
+                })
         }
-        modalBody.classList.remove('bg-warning')
-        modalBody.classList.add(modalBodyExtraClass)
-      }).catch(async(e) => {
-        const response = e.json();
-        modalBody.innerHTML = `Persona ya ingreso, o codigo no encontrado`;        
-        console.log(response)
-        modalBody.classList.remove('bg-warning')
-        modalBody.classList.add(modalBodyExtraClass)
-      })
-    }
-    
-  }
 
-  function onScanSuccess(decodedText, decodedResult) {
-    if(isRequesting) {
-      return;      
     }
 
-    isRequesting = true;
-    const id = parseInt(decodedText);
-      modalBodyExtraClass = 'bg-danger';
-    if (isNaN(id)){
-      modalBody.innerHTML = `No es un codigo valido, intente nuevamente`;
-      modalBody.classList.add(modalBodyExtraClass)
-      btnModal.click();
-    } else {
-      modalBody.innerHTML = `verificando ..., un momento porfavor`;
-      modalBody.classList.add('bg-warning')
-      btnModal.click();
-      fetch(`/dashboard/verify-code/${id}/`)
-      .then(async(r) => {
-        if(r.status===404){
-          modalBody.innerHTML = `El codigo no existe`;          
+    function onScanSuccess(decodedText, decodedResult) {
+        if (isRequesting) {
+            return;
+        }
+
+        isRequesting = true;
+        const id = parseInt(decodedText);
+        modalBodyExtraClass = 'bg-danger';
+        if (isNaN(id)) {
+            modalBody.innerHTML = `No es un codigo valido, intente nuevamente`;
+            modalBody.classList.add(modalBodyExtraClass)
+            btnModal.click();
         } else {
-          const data = await r.json();
-          if(r.status===400){
-            modalBody.innerHTML = data.message;
-          }
-          if(r.status===200){
-            modalBody.innerHTML = `Ok, persona autorizada`;          
-            modalBodyExtraClass = 'bg-success';
-          }
+            modalBody.innerHTML = `verificando ..., un momento porfavor`;
+            modalBody.classList.add('bg-warning')
+            btnModal.click();
+            fetch(`/dashboard/verify-code/${id}/`)
+                .then(async (r) => {
+                    if (r.status === 404) {
+                        modalBody.innerHTML = `El codigo no existe`;
+                    } else {
+                        const data = await r.json();
+                        if (r.status === 400) {
+                            modalBody.innerHTML = data.message;
+                        }
+                        if (r.status === 200) {
+                            modalBody.innerHTML = `Ok, persona autorizada`;
+                            modalBodyExtraClass = 'bg-success';
+                        }
+                    }
+                    modalBody.classList.remove('bg-warning')
+                    modalBody.classList.add(modalBodyExtraClass)
+                }).catch(async (e) => {
+                    modalBody.innerHTML = `Persona ya ingreso, o codigo no encontrado`;
+                    console.log(response)
+                    modalBody.classList.remove('bg-warning')
+                    modalBody.classList.add(modalBodyExtraClass)
+                })
         }
-        modalBody.classList.remove('bg-warning')
-        modalBody.classList.add(modalBodyExtraClass)
-      }).catch(async(e) => {        
-        modalBody.innerHTML = `Persona ya ingreso, o codigo no encontrado`;        
-        console.log(response)
-        modalBody.classList.remove('bg-warning')
-        modalBody.classList.add(modalBodyExtraClass)
-      })
+
     }
-    
-  }
 
+    let config = {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        rememberLastUsedCamera: true,
+        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+    };
 
-  const html5QrCode = new Html5Qrcode("reader");
-  const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-  html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+    let html5QrcodeScanner = new Html5QrcodeScanner("reader", config, /* verbose= */ false);
+    html5QrcodeScanner.render(onScanSuccess);
 
-
-  //  let html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-  // html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess);
-  //html5QrcodeScanner.render(onScanSuccess);
-
-  modal.addEventListener('hidden.bs.modal', function () {    
-    isRequesting = false;
-    const modalInstance = bootstrap.Modal.getInstance(modal) // Returns a Bootstrap modal instance
-    modalInstance.hide();
-    modalBody.classList.remove(modalBodyExtraClass)
-  })
+    modal.addEventListener('hidden.bs.modal', function () {
+        isRequesting = false;
+        const modalInstance = bootstrap.Modal.getInstance(modal) // Returns a Bootstrap modal instance
+        modalInstance.hide();
+        modalBody.classList.remove(modalBodyExtraClass)
+    })
 
 
 </script>
