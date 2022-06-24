@@ -92,7 +92,7 @@ def checkoutAttendance(attendance_id):
 def verify_code(request, id):
   try:
     code = id
-    codeparsed = int(code) / 13
+    codeparsed = int(int(code) / 13)
     models.Attendance.objects.get(id=codeparsed)
     checkoutAttendance(codeparsed)
     dict_obj= { 'attendances_ids': [codeparsed] }
