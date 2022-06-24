@@ -8,6 +8,7 @@ from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template import loader
 from django.conf import settings
 from datetime import datetime 
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect
 
 @login_required
 def create(request):
@@ -36,11 +37,6 @@ def leave(request):
       
     except models.Attendance.DoesNotExist:
       message = 'el codigo ingresado no existe'
-
-
-
-
-
   return render(request, 'dashboard/attendance_out.html', locals())
 
 
@@ -84,3 +80,37 @@ def save(request):
   except Exception as e:
     print(e)
   return JsonResponse({'success': False})
+
+
+@login_required
+def verify_code(request, id):
+  try:
+    code = id
+    codeparsed = int(code) / 13
+    attendance = models.Attendance.objects.get(id=codeparsed)
+    details = models.AttendanceDetail.objects.filter(attendance=attendance)
+    for d in details:    
+        d.end_at = datetime.now()
+        d.save()
+    dict_obj= { 'attendances_ids': [codeparsed] }
+    serialized = json.dumps(dict_obj)
+    return HttpResponse(serialized, content_type='application/json')
+  except models.Attendance.DoesNotExist:
+    dict_obj= { 'message': 'el codigo ingresado no existe' }
+    serialized = json.dumps(dict_obj)
+    return HttpResponseBadRequest(serialized, content_type='application/json')
+  return HttpResponseNotFound()
+
+@login_required
+def verify_dni(request, dni):
+  try:
+    person = models.Person.objects.get(dni=dni)
+    children = models.ChildSib.objects.values_list('child').filter(sib=person)
+    start_at=datetime.now()
+    start_at.replace(minute=0, hour=0, second=0, microsecond=0)
+    attendances_ids = models.AttendanceDetail.objects.values_list('attendance__id', flat=True).filter(child__in=children, start_at__gt=start_at).distinct()
+    dict_obj= { 'attendances_ids': list(attendances_ids) }
+    serialized = json.dumps(dict_obj)
+    return HttpResponse(serialized, content_type='application/json')
+  except models.Person.DoesNotExist:
+    return HttpResponseNotFound()
