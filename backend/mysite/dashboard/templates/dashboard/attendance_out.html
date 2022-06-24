@@ -1,67 +1,56 @@
 {% extends 'dashboard/layout.html' %}
 {% block container %}
 <div id="app">
-  <h2>Asistencia - Salida de Niños</h2>
+  <div class="d-flex justify-content-between">
+    <h2>Asistencia - Salida de Niños</h2>
+    <a href="{% url 'dashboard:attendance_checkout' %}" class="btn btn-primary">Regresar</a>
+  </div>
   <br>
-  <div class="d-md-flex justify-content-around">
-    <div class="card mb-3">
-      <div class="card-header">
-        <h4>Codigo para recojer a los niños</h4>
-      </div>
-      <div class="card-body">
-        <form action="." method="post">
-          {% csrf_token %}
-          <div class="input-group mb-3">
-            <label class="input-group-text" for="inputGroupSelect01" >CODIGUITO</label>
-            <input class="form-control" name="code" type="number" required>
-            <button class="btn btn-primary" type="submit" id="button-addon2">
-              Buscar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-    </div>
-      <hr>
+  <hr>
 
-      {% if attendance %}
-      <h5>Dejo a los niños: {{ attendance.parent_a.name }}  - {{ attendance.parent_a.dni }}( <span>&#9742;</span> {{ attendance.parent_a.cellphone|default:'' }} )</h5>
-      <br>
-      <h5>Recoge a los niños: {{ attendance.parent_b.name }} - {{ attendance.parent_b.dni }}  ( <span>&#9742;</span> {{ attendance.parent_b.cellphone|default:'' }} )</h5>
-      <br>
-      <form method="post" action=".">
-        {% csrf_token %}
-        <input type="hidden" name="code" value="{{code}}">
-        <table class="table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Nombre</th>
-              <th>Salon</th>
-              <th>Dejado a las</th>
-              <th>Recogido a las</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for d in details %}
-            <tr>
-              <td>
-                <input type="checkbox" class="custom-control-input" value="{{d.id}}" name="children[]" {% if d.end_at%} checked disabled {% endif %}>
-              </td>
-              <td>
-                {% if d.end_at %}<del>{% endif %}
-                {{ d.child.name }}
-                {% if d.end_at %}</del>{% endif %}
-              </td>
-              <td>{{ d.space.name }}</td>
-              <td>{{ d.start_at }}</td>
-              <td>{{ d.end_at|default:'' }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        <button class="btn btn-primary" type="submit">Marcar Salida</button>
-      </form>
-      {% endif %}
+  <form method="post" action=".?{{ids_str|safe}}">
+    {% csrf_token %}
+    <input type="hidden" name="code" value="{{code}}">
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nombre</th>
+          <th>Salon</th>
+          <th>Dejado a las</th>
+          <th>Recogido a las</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in details %}
+        <tr>
+          <td>
+            <input type="checkbox" class="custom-control-input" value="{{d.id}}" name="children[]" {% if d.end_at%}
+              checked="checked" disabled {% endif %}>
+          </td>
+          <td>
+            {% if d.end_at %}<del>{% endif %}
+              {{ d.child.name }}
+              {% if d.end_at %}</del>{% endif %}
+          </td>
+          <td>{{ d.space.name }}</td>
+          <td>{{ d.start_at }}</td>
+          <td>{{ d.end_at|default:'' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button class="btn btn-primary d-none" id="submit" type="submit">Marcar Salida</button>
+  </form>
 </div>
+<script>
+  window.onload = function () {
+    const inputs = document.getElementsByName('children[]');
+    for (const i of inputs) {
+      if (!i.getAttribute('checked')) {
+        document.getElementById('submit').classList.remove('d-none');
+      }
+    }
+  }
+</script>
 {% endblock %}

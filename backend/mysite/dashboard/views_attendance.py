@@ -22,19 +22,19 @@ def create(request):
 
 @login_required
 def leave(request):
+  ids = request.GET.getlist('ids[]')  
+  details = models.AttendanceDetail.objects.select_related('child').filter(attendance__id__in=ids)
+  ids_str = ''
+  for id in ids:
+    ids_str += 'ids[]=' + id + '&'
   if request.POST:
-    code = request.POST.get('code')
-    codeparsed = int(code) / 13
     children = request.POST.getlist('children[]')
     try:
-      attendance = models.Attendance.objects.get(id=codeparsed)
-      details = models.AttendanceDetail.objects.filter(attendance=attendance)      
       if children:
         for d in details:
           if str(d.id) in children:
             d.end_at = datetime.now()
             d.save()
-      
     except models.Attendance.DoesNotExist:
       message = 'el codigo ingresado no existe'
   return render(request, 'dashboard/attendance_out.html', locals())
@@ -81,17 +81,20 @@ def save(request):
     print(e)
   return JsonResponse({'success': False})
 
+def checkoutAttendance(attendance_id):
+  details = models.AttendanceDetail.objects.filter(attendance__id=attendance_id)
+  for d in details:
+      d.end_at = datetime.now()
+      d.save()
+
 
 @login_required
 def verify_code(request, id):
   try:
     code = id
     codeparsed = int(code) / 13
-    attendance = models.Attendance.objects.get(id=codeparsed)
-    details = models.AttendanceDetail.objects.filter(attendance=attendance)
-    for d in details:    
-        d.end_at = datetime.now()
-        d.save()
+    models.Attendance.objects.get(id=codeparsed)
+    checkoutAttendance(codeparsed)
     dict_obj= { 'attendances_ids': [codeparsed] }
     serialized = json.dumps(dict_obj)
     return HttpResponse(serialized, content_type='application/json')
@@ -109,7 +112,10 @@ def verify_dni(request, dni):
     start_at=datetime.now()
     start_at.replace(minute=0, hour=0, second=0, microsecond=0)
     attendances_ids = models.AttendanceDetail.objects.values_list('attendance__id', flat=True).filter(child__in=children, start_at__gt=start_at).distinct()
-    dict_obj= { 'attendances_ids': list(attendances_ids) }
+    attendances_ids = list(attendances_ids)
+    if len(attendances_ids) == 1:
+      checkoutAttendance(attendances_ids[0])
+    dict_obj= { 'attendances_ids': attendances_ids }
     serialized = json.dumps(dict_obj)
     return HttpResponse(serialized, content_type='application/json')
   except models.Person.DoesNotExist:

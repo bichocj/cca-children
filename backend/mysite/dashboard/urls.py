@@ -11,7 +11,7 @@ urlpatterns = [
   path('', views_attendance.create, name='attendance'),
   path('out/', views_attendance.leave, name='attendance_leave'),  
   path('attendance/save/', views_attendance.save, name='attendance_save'),
-  path('checkout/', TemplateView.as_view(template_name="dashboard/checkout.html")),
+  path('checkout/', TemplateView.as_view(template_name="dashboard/checkout.html"), name='attendance_checkout'),
   path('verify-code/<int:id>/', views_attendance.verify_code, name='verify-code'),
   path('verify-dni/<int:dni>/', views_attendance.verify_dni, name='verify-dni'),
 

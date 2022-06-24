@@ -86,7 +86,8 @@
                         const data = await r.json();
                         if (r.status === 200) {
                             console.log('data:::')
-                            console.log(data)
+                            const { attendances_ids }  = data;
+                            window.location = `/dashboard/out/?${attendances_ids.map(a => `ids[]=${a}`).join('&')}`;
                             modalBody.innerHTML = `Ok, persona autorizada`;
                             modalBodyExtraClass = 'bg-success';
                         }
@@ -134,6 +135,8 @@
                         }
                         if (r.status === 200) {
                             console.log(data);
+                            const { attendances_ids }  = data;
+                            window.location = `/dashboard/out/${attendances_ids.join(',')}`;
                             modalBody.innerHTML = `Ok, persona autorizada`;
                             modalBodyExtraClass = 'bg-success';
                         }
