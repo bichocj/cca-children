@@ -6,7 +6,8 @@
         <h4>Verificar Codigo</h4>
     </div>
     <div class="card-body">
-        Buscar por Qr <br>
+        <span class="input-group-text" id="basic-addon1">Buscar por QR</span>
+         <br>
         <div id="reader" width="600px"></div>
     </div>
     <div class="card-body">
@@ -122,7 +123,7 @@
             modalBody.classList.add(modalBodyExtraClass)
             btnModal.click();
         } else {
-            modalBody.innerHTML = `verificando ..., un momento porfavor`;
+            modalBody.innerHTML = `verificando ..., un momento porfavor ${id}`;
             modalBody.classList.add('bg-warning')
             btnModal.click();
             fetch(`/dashboard/verify-code/${id}/`)
