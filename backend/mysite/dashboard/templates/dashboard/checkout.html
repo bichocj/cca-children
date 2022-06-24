@@ -6,6 +6,7 @@
         <h4>Verificar Codigo</h4>
     </div>
     <div class="card-body">
+        Buscar por Qr <br>
         <div id="reader" width="600px"></div>
     </div>
     <div class="card-body">
@@ -136,7 +137,7 @@
                         if (r.status === 200) {
                             console.log(data);
                             const { attendances_ids }  = data;
-                            window.location = `/dashboard/out/${attendances_ids.join(',')}`;
+                            window.location = `/dashboard/out/?${attendances_ids.map(a => `ids[]=${a}`).join('&')}`;
                             modalBody.innerHTML = `Ok, persona autorizada`;
                             modalBodyExtraClass = 'bg-success';
                         }
