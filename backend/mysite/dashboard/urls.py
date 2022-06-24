@@ -11,6 +11,7 @@ urlpatterns = [
   path('', views_attendance.create, name='attendance'),
   path('out/', views_attendance.leave, name='attendance_leave'),  
   path('attendance/save/', views_attendance.save, name='attendance_save'),
+  path('checkout/', TemplateView.as_view(template_name="dashboard/checkout.html")),
 
   path('family/', login_required(TemplateView.as_view(template_name="dashboard/family.html")), name='family'),
   path('family/create/', views_people.family_create, name='family_create'),
