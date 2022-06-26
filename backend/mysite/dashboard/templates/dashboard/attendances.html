@@ -7,7 +7,7 @@
 <div class="">
   <div class="card mb-3">
     <div class="card-header d-flex justify-content-between">
-      <h3>Personas</h3>
+      <h3>Asistencia</h3>
       <div>
         <select class="form-select" aria-label="Default select example" id="space_id">
             <option value="">Seleccione un salon</option>
@@ -23,7 +23,9 @@
             <tr>
               <th>DNI</th>
               <th>Nombres</th>
+              <th>Apoderado</th>
               <th>Salon</th>
+              <th>Recogido a las</th>
             </tr>
           </thead>
           <tbody>
@@ -31,7 +33,9 @@
             <tr>
               <td>{{p.child.dni}}</td>
               <td>{{p.child.name}}</td>
+              <td>{{p.attendance.parent_a.name}} ( <span>{{p.attendance.parent_a.cellphone|default:''}}</span> )</td>
               <td>{{p.space.name}}</td>
+              <td>{{p.end_at|default:''}}</td>
             </tr>
           {% endfor%}
           </tbody>
