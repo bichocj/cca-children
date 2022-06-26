@@ -42,6 +42,7 @@
   
           <div class="collapse navbar-collapse justify-content-md-end" id="navbarsExample09">
             <ul class="navbar-nav mb-2 mb-lg-0">                            
+              {% if user %}<li class="nav-item"><a href="{% url 'dashboard:attendance_in_spaces' %}" class="nav-link">Ver Asistencia</a></li>{% endif %}
               {% if user %}<li class="nav-item"><a href="{% url 'dashboard:attendance' %}" class="nav-link">Dejar Niños</a></li>{% endif %}
               {% if user %}<li class="nav-item"><a href="{% url 'dashboard:attendance_checkout' %}" class="nav-link">Recoger Niños</a></li>{% endif %}
               {% if user %}<li class="nav-item"><a href="{% url 'dashboard:family' %}" class="nav-link">Registrar Familia</a></li>{% endif %}
