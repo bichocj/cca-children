@@ -1,0 +1,62 @@
+{% extends 'dashboard/layout.html' %}
+{% load crispy_forms_tags %}
+{% block more_styles %}
+  <link href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css" rel="stylesheet">    
+{% endblock %}
+{% block container %}
+<div class="">
+  <div class="card mb-3">
+    <div class="card-header d-flex justify-content-between">
+      <h3>Personas</h3>
+      <div>
+        <select class="form-select" aria-label="Default select example" id="space_id">
+            <option value="">Seleccione un salon</option>
+            {% for s in spaces %}
+            <option value="{{s.id}}" {% if s.id is space_id %} selected {% endif %}>{{s.name}}</option>
+            {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="card-body">
+        <table class="table" id="example">
+          <thead>
+            <tr>
+              <th>DNI</th>
+              <th>Nombres</th>
+              <th>Telefono</th>
+              <th>Correo</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for p in attedances_details %}
+            <tr>
+              <td>{{p.child.dni}}</td>
+              <td>{{p.child.name}}</td>
+              <td>{{p.child.cellphone|default:''}}</td>
+              <td>{{p.child.email|default:''}}</td>
+            </tr>
+          {% endfor%}
+          </tbody>
+        </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block more_scripts %}
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#example').DataTable({
+      language: {
+            url: '//cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json'
+        }
+    });
+    $('#space_id').change(() => {
+        const space_id = $('#space_id').val()
+        window.location = `{% url 'dashboard:attendance_in_spaces' %}?space_id=${space_id}`;
+    })
+} );
+</script>
+{% endblock %}

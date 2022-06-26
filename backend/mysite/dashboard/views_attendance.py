@@ -120,3 +120,16 @@ def verify_dni(request, dni):
     return HttpResponse(serialized, content_type='application/json')
   except models.Person.DoesNotExist:
     return HttpResponseNotFound()
+
+@login_required
+def in_spaces(request):
+  space_id = request.GET.get('space_id', '')
+  spaces = models.Space.objects.all()
+  start_at=datetime.now()
+  start_at.replace(minute=0, hour=0, second=0, microsecond=0)
+  if space_id is not '':
+    space_id = int(space_id)
+    attedances_details = models.AttendanceDetail.objects.select_related('child').filter(space__id=space_id, start_at=start_at)
+  else:
+    attedances_details = models.AttendanceDetail.objects.select_related('child').filter(start_at=start_at)
+  return render(request, 'dashboard/attendances.html', locals())
