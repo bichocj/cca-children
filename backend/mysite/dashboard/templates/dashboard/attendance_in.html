@@ -44,7 +44,7 @@
       </div>
       <div class="card-body">
         <div v-if="parentA.id">
-          ${ parentA.name }
+          ${ parentA?.name }
           o tambien
         </div>
         <parent-searching 
@@ -82,9 +82,9 @@
                   <input type="checkbox" class="custom-control-input" v-model="child.checked">
                 </td>
                 <td>${child.dni}</td>
-                <td>${child.name} ${child.lastName}</td>
+                <td>${child?.name} ${child.lastName}</td>
                 <td>${child.age}</td>
-                <td>${child.space.name}</td>
+                <td>${child?.space?.name}</td>
               </tr>
             </tbody>
           </table>
