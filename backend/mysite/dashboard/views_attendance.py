@@ -1,3 +1,4 @@
+import imp
 import json
 from django.http import JsonResponse
 from . import models
@@ -123,13 +124,14 @@ def verify_dni(request, dni):
 
 @login_required
 def in_spaces(request):
+  import pdb; pdb.set_trace()
   space_id = request.GET.get('space_id', '')
   spaces = models.Space.objects.all()
   start_at=datetime.now()
   start_at.replace(minute=0, hour=0, second=0, microsecond=0)
   if space_id is not '':
     space_id = int(space_id)
-    attedances_details = models.AttendanceDetail.objects.select_related('child').filter(space__id=space_id, start_at=start_at)
+    attedances_details = models.AttendanceDetail.objects.select_related('child').filter(space__id=space_id, start_at__gt=start_at)
   else:
     attedances_details = models.AttendanceDetail.objects.select_related('child').filter(start_at=start_at)
   return render(request, 'dashboard/attendances.html', locals())
