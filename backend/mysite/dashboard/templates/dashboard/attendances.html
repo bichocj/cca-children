@@ -1,7 +1,7 @@
 {% extends 'dashboard/layout.html' %}
 {% load crispy_forms_tags %}
 {% block more_styles %}
-  <link href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css" rel="stylesheet">    
+<link href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 {% endblock %}
 {% block container %}
 <div class="">
@@ -10,36 +10,36 @@
       <h3>Asistencia</h3>
       <div>
         <select class="form-select" aria-label="Default select example" id="space_id">
-            <option value="">Seleccione un salon</option>
-            {% for s in spaces %}
-            <option value="{{s.id}}" {% if s.id is space_id %} selected {% endif %}>{{s.name}}</option>
-            {% endfor %}
+          <option value="">Seleccione un salon</option>
+          {% for s in spaces %}
+          <option value="{{s.id}}" {% if s.id is space_id %} selected {% endif %}>{{s.name}}</option>
+          {% endfor %}
         </select>
       </div>
     </div>
     <div class="card-body">
-        <table class="table" id="example">
-          <thead>
-            <tr>
-              <th>DNI</th>
-              <th>Nombres</th>
-              <th>Apoderado</th>
-              <th>Salon</th>
-              <th>Recogido a las</th>
-            </tr>
-          </thead>
-          <tbody>
+      <table class="table" id="example">
+        <thead>
+          <tr>
+            <th>DNI</th>
+            <th>Nombres</th>
+            <th>Apoderado</th>
+            <th>Salon</th>
+            <th>Recogido a las</th>
+          </tr>
+        </thead>
+        <tbody>
           {% for p in attedances_details %}
-            <tr>
-              <td>{{p.child.dni}}</td>
-              <td>{{p.child.name}}</td>
-              <td>{{p.attendance.parent_a.name}} ( <span>{{p.attendance.parent_a.cellphone|default:''}}</span> )</td>
-              <td>{{p.space.name}}</td>
-              <td>{{p.end_at|default:''}}</td>
-            </tr>
+          <tr>
+            <td>{{p.child.dni}}</td>
+            <td>{{p.child.name}}</td>
+            <td>{{p.attendance.parent_a.name}} ( <span>{{p.attendance.parent_a.cellphone|default:''}}</span> )</td>
+            <td>{{p.space.name}}</td>
+            <td>{{p.end_at|default:''}}</td>
+          </tr>
           {% endfor%}
-          </tbody>
-        </table>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -49,16 +49,20 @@
 <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     $('#example').DataTable({
+      order: [],
+      columnDefs: [
+        { targets: 'no-sort', orderable: false }
+      ],
       language: {
-            url: '//cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json'
-        }
+        url: '//cdn.datatables.net/plug-ins/1.11.3/i18n/es_es.json'
+      }
     });
     $('#space_id').change(() => {
-        const space_id = $('#space_id').val()
-        window.location = `{% url 'dashboard:attendance_in_spaces' %}?space_id=${space_id}`;
+      const space_id = $('#space_id').val()
+      window.location = `{% url 'dashboard:attendance_in_spaces' %}?space_id=${space_id}`;
     })
-} );
+  });
 </script>
 {% endblock %}
