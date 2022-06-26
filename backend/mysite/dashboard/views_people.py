@@ -39,7 +39,7 @@ def create(request):
 
 def show_details(request, dni):
   try:
-    person = models.Person.objects.get(dni=dni)
+    person = models.Person.objects.get(id=dni)
     relations = models.ChildSib.objects.select_related('child').filter(sib=person)
     return render(request, 'dashboard/people/show_details.html', locals())
   except models.Person.DoesNotExist:

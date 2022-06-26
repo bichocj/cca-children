@@ -30,7 +30,7 @@
               <td>{{p.name}}</td>
               <td>{{p.cellphone|default:''}}</td>
               <td>{{p.email|default:''}}</td>
-              <td><a class="btn btn-light btn-sm" href="{% url 'dashboard:people_show_detail' p.dni %}">ver</a></td>
+              <td><a class="btn btn-light btn-sm" href="{% url 'dashboard:people_show_detail' p.id %}">ver</a></td>
             </tr>
           {% endfor%}
           </tbody>
