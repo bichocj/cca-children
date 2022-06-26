@@ -124,7 +124,6 @@ def verify_dni(request, dni):
 
 @login_required
 def in_spaces(request):
-  import pdb; pdb.set_trace()
   space_id = request.GET.get('space_id', '')
   spaces = models.Space.objects.all()
   start_at=datetime.now()
