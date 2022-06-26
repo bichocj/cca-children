@@ -23,8 +23,7 @@
             <tr>
               <th>DNI</th>
               <th>Nombres</th>
-              <th>Telefono</th>
-              <th>Correo</th>
+              <th>Salon</th>
             </tr>
           </thead>
           <tbody>
@@ -32,8 +31,7 @@
             <tr>
               <td>{{p.child.dni}}</td>
               <td>{{p.child.name}}</td>
-              <td>{{p.child.cellphone|default:''}}</td>
-              <td>{{p.child.email|default:''}}</td>
+              <td>{{p.space.name}}</td>
             </tr>
           {% endfor%}
           </tbody>

@@ -130,7 +130,7 @@ def in_spaces(request):
   start_at.replace(minute=0, hour=0, second=0, microsecond=0)
   if space_id is not '':
     space_id = int(space_id)
-    attedances_details = models.AttendanceDetail.objects.select_related('child').filter(space__id=space_id, start_at__gt=start_at)
+    attedances_details = models.AttendanceDetail.objects.select_related('child', 'space').filter(space__id=space_id, start_at__gt=start_at)
   else:
-    attedances_details = models.AttendanceDetail.objects.select_related('child').filter(start_at=start_at)
+    attedances_details = models.AttendanceDetail.objects.select_related('child', 'space').filter(start_at__gt=start_at)
   return render(request, 'dashboard/attendances.html', locals())
