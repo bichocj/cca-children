@@ -56,7 +56,12 @@ def save(request):
     for child in children:
       id = child['id']
       spaceId = child['spaceId']
-      details.append(models.AttendanceDetail(child=models.Person(id=id),space=models.Space(id=spaceId), attendance=attendance))
+      if spaceId == 'AU':
+        age = child['age']
+        space_i = models.Space.objects.filter(min_age__lte=age, max_age__gte=age).first()
+        details.append(models.AttendanceDetail(child=models.Person(id=id),space=space_i, attendance=attendance))
+      else:
+        details.append(models.AttendanceDetail(child=models.Person(id=id),space=models.Space(id=spaceId), attendance=attendance))
 
     models.AttendanceDetail.objects.bulk_create(details, ignore_conflicts=True)
 
@@ -134,3 +139,17 @@ def in_spaces(request):
   else:
     attedances_details = models.AttendanceDetail.objects.select_related('child', 'space', 'attendance__parent_a').filter(start_at__gt=start_at).order_by('-end_at')
   return render(request, 'dashboard/attendances.html', locals())
+
+
+@login_required
+def release(request, id):
+  dict_obj= { 'success': True }
+  try:
+    import pdb; pdb.set_trace()
+    ad = models.AttendanceDetail.objects.get(id=id)
+    ad.released = True
+    ad.save()
+  except models.AttendanceDetail.DoesNotExist:
+    dict_obj= { 'success': False }    
+  serialized = json.dumps(dict_obj)
+  return HttpResponse(serialized, content_type='application/json')

@@ -26,6 +26,7 @@
             <th>Apoderado</th>
             <th>Salon</th>
             <th>Recogido a las</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -36,6 +37,11 @@
             <td>{{p.attendance.parent_a.name}} ( <span>{{p.attendance.parent_a.cellphone|default:''}}</span> )</td>
             <td>{{p.space.name}}</td>
             <td>{{p.end_at|default:''}}</td>
+            <td id="ad_{{p.id}}">
+              {% if not p.released %}
+                <a id="adb_{{p.id}}" class="btn btn-secondary" onclick="release({{p.id}})">liberar</a>
+              {% endif %}
+            </td>
           </tr>
           {% endfor%}
         </tbody>
@@ -49,6 +55,13 @@
 <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
 <script>
+  function release(attendanceId) {
+    $(`#adb_${attendanceId}`).text('liberando..');
+    fetch(`/dashboard/attendance/release/${attendanceId}/`).then(() => {
+      window.location.reload();
+    })
+    
+  }
   $(document).ready(function () {
     $('#example').DataTable({
       order: [],

@@ -270,8 +270,9 @@
 <script>
   var spaces = [];
   {% for class in spaces %} 
-    spaces.push({name: '{{class.name}}', id: '{{class.id}}', max: {{class.max_age}}, min: {{class.min_age}}, current: {{class.current}}, capacity: {{class.capacity}} });
+  spaces.push({name: '{{class.name}}', id: '{{class.id}}', max: {{class.max_age}}, min: {{class.min_age}}, current: {{class.current}}, capacity: {{class.capacity}} });
   {% endfor %} 
+  spaces.push({name: 'Automatico', id: 'AU', max: 10000, min: 0, current: 0, capacity: 10000 });
   var $toast;
   
   function showToast(title, subtitle, type='primary') {
@@ -488,7 +489,7 @@
           showToast('Advertencia', `${this.parentB.name} no tiene correo, deberá mostrar su DNI`, 'warning')          
         }
         const csrftoken = Cookies.get('csrftoken');
-        children = children.map(c => ({id: c.id, spaceId: this.currentSpace}));
+        children = children.map(c => ({id: c.id, spaceId: this.currentSpace, age: c.age}));
         const data = {
           parentA: this.parentA.id,
           parentB: this.parentB.id,
