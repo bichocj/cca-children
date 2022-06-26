@@ -137,7 +137,7 @@ def in_spaces(request):
     space_id = int(space_id)
     attedances_details = models.AttendanceDetail.objects.select_related('child', 'space').filter(space__id=space_id, start_at__gt=start_at).order_by('-end_at')
   else:
-    attedances_details = models.AttendanceDetail.objects.select_related('child', 'space', 'attendance__parent_a').filter(start_at__gt=start_at).order_by('-end_at')
+    attedances_details = models.AttendanceDetail.objects.select_related('child', 'space', 'attendance__parent_a').all().order_by('-end_at')
   return render(request, 'dashboard/attendances.html', locals())
 
 
