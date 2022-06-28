@@ -132,12 +132,12 @@ def in_spaces(request):
   space_id = request.GET.get('space_id', '')
   spaces = models.Space.objects.all()
   start_at=datetime.now()
-  start_at.replace(minute=0, hour=0, second=0, microsecond=0)
-  if space_id is not '':
+  start_at = start_at.replace(minute=0, hour=0, second=0, microsecond=0)
+  if space_id != '':
     space_id = int(space_id)
     attedances_details = models.AttendanceDetail.objects.select_related('child', 'space').filter(space__id=space_id, start_at__gt=start_at).order_by('-end_at')
   else:
-    attedances_details = models.AttendanceDetail.objects.select_related('child', 'space', 'attendance__parent_a').all().order_by('-end_at')
+    attedances_details = models.AttendanceDetail.objects.select_related('child', 'space', 'attendance__parent_a').filter(start_at__gt=start_at).order_by('-end_at')
   return render(request, 'dashboard/attendances.html', locals())
 
 
