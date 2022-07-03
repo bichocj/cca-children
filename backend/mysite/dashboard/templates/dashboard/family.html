@@ -26,7 +26,7 @@
         <h3>Mamá</h3>
       </div>
       <div class="card-body">
-        <parent-searching :on-change="updateMom" id="first"/>
+        <parent-searching :on-change="updateMom" id="first" with-children="true"/>
       </div>
     </div>
   </div>
@@ -36,7 +36,7 @@
         <h3>Papá</h3>
       </div>
       <div class="card-body">        
-        <parent-searching use-cellphone :on-change="updateDad" id="second"/>
+        <parent-searching use-cellphone :on-change="updateDad" id="second" with-children="true"/>
       </div>
     </div>
   </div>
@@ -254,8 +254,35 @@
               </button>
             </td>
           </tr>
+          
         </tbody>
       </table>
+
+      <div v-if="withChildren">
+        <b>Familia:</b>
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>DNI</th>
+              <th>Nombre</th>
+              <th>Parentesco</th>            
+              <th>Edad</th>            
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="pchild in parent.children"
+              :key="pchild.id"
+            >
+              <td>${pchild.dni}</td>
+              <td>${pchild.name}</td>
+              <td>${pchild.relationship}</td>
+              <td>${pchild.age}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </script>
@@ -334,6 +361,10 @@
       },
       onChange: {
         type: Object
+      },
+      withChildren: {
+        type: Boolean,
+        default: false
       }
     },
     watch: {
@@ -371,6 +402,9 @@
     },
     methods: {
       getAge: function(dateString) {
+        if(!dateString) {
+          return '';
+        }
         var today = new Date();
         var birthDate = new Date(dateString);
         var age = today.getFullYear() - birthDate.getFullYear();
@@ -420,14 +454,18 @@
       searchPerson: function () {
         this.searching = true;
         if(this.isValidDni(this.parent.dni)) {
-          fetch(`/dashboard/get-person/${this.parent.dni}/?commit=true`).then( async(r) => {
+          fetch(`/dashboard/get-person/${this.parent.dni}/?commit=true&with_children=${this.withChildren}`).then( async(r) => {
             if(r.status === 200) {
-              const {name, email, cellphone, date_of_birth, id} = await r.json()
+              const {name, email, cellphone, date_of_birth, id, children} = await r.json()
               this.parent.name = name;
               this.parent.cellphone = cellphone;
               this.parent.dateOfBirth = date_of_birth;
               this.parent.email = email;
               this.parent.id = id;
+              for ( const c of children) {
+                c.age = this.getAge(c.dateOfBirth);
+              }
+              this.parent.children = children;
               const age = this.getAge(this.parent.dateOfBirth);
               const space = this.spaces.find(s => s.min <= age && age <= s.max);
               if (space) {
