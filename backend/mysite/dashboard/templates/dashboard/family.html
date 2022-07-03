@@ -456,7 +456,7 @@
         if(this.isValidDni(this.parent.dni)) {
           fetch(`/dashboard/get-person/${this.parent.dni}/?commit=true&with_children=${this.withChildren}`).then( async(r) => {
             if(r.status === 200) {
-              const {name, email, cellphone, date_of_birth, id, children} = await r.json()
+              const {name, email, cellphone, date_of_birth, id, children = []} = await r.json()
               this.parent.name = name;
               this.parent.cellphone = cellphone;
               this.parent.dateOfBirth = date_of_birth;
