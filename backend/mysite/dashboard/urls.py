@@ -23,7 +23,7 @@ urlpatterns = [
   path('people/create/', views_people.create, name='people_create'),
   path('people/create-person/', views_people.create_person, name='people_create_person'),
   path('people/show-detail/<str:dni>/', views_people.show_details, name='people_show_detail'),
-  re_path(r'^get-children/(?P<dni>[0-9]{8})/$', views_people.getChildren, name='get-children'),
-  re_path(r'^get-person/(?P<dni>[0-9]{8})/$', views_people.getPerson, name='get-person'),
+  re_path(r'^get-children/(?P<dni>[0-9]{8})/$', views_people.get_children, name='get-children'),
+  re_path(r'^get-person/(?P<dni>[0-9]{8})/$', views_people.get_person, name='get-person'),
 
 ]

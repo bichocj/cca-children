@@ -86,7 +86,7 @@ def family_create(request):
 
 
 @login_required
-def getChildren(request, dni):
+def get_children(request, dni):
   try:
     person = models.Person.objects.get(dni=dni)
     relations = models.ChildSib.objects.select_related('child').filter(sib=person)
@@ -103,9 +103,36 @@ def getChildren(request, dni):
   except models.Person.DoesNotExist:
     return HttpResponseBadRequest()
 
-def getPerson(request, dni):
+def get_boolean_from_request(request, key, method='POST'):
+	" gets the value from request and returns it's boolean state "
+	value = getattr(request, method).get(key, False)
+	
+	if value == 'False' or value == 'false' or value == '0' or value == 0:
+		value = False
+	elif value: 
+		value = True
+	else:
+		value = False		
+	return value
+
+def get_person(request, dni):
+  commit = get_boolean_from_request(request, 'commit', 'GET')
+  with_children = get_boolean_from_request(request, 'with_children', 'GET')
+  children = []
   try:
     person = models.Person.objects.get(dni=dni)
+
+    if with_children:
+      relations = models.ChildSib.objects.select_related('child').filter(sib=person)
+      for rs in relations:
+        children.append({
+          'id': rs.child.id,
+          'dni': rs.child.dni,
+          'name': rs.child.name,
+          'relationship': rs.get_relationship_down_display(),
+          'dateOfBirth': rs.child.date_of_birth
+        })
+
   except models.Person.DoesNotExist:
 #     #protocol = 'https' if request.is_secure() else 'http'
     protocol = 'https'
@@ -117,10 +144,11 @@ def getPerson(request, dni):
       return HttpResponseBadRequest(serialized, content_type='application/json')
     name = personTmp.get('nombres', '') + ' ' + personTmp.get('apellidoPaterno', '') + ' ' + personTmp.get('apellidoMaterno', '')
     person = models.Person(dni=dni, name=name)
-    if request.GET.get('commit'):
+    if commit:
       person.save()
   
   dict_obj = model_to_dict(person)
+  dict_obj['children'] = children
   serialized = json.dumps(dict_obj, indent=4, cls=DateTimeEncoder)
 
   return HttpResponse(serialized, content_type='application/json')
