@@ -115,8 +115,8 @@ def verify_dni(request, dni):
   try:
     person = models.Person.objects.get(dni=dni)
     children = models.ChildSib.objects.values_list('child').filter(sib=person)
-    start_at=datetime.now()
-    start_at.replace(minute=0, hour=0, second=0, microsecond=0)
+    start_at = datetime.now()
+    start_at = start_at.replace(minute=0, hour=0, second=0, microsecond=0)
     attendances_ids = models.AttendanceDetail.objects.values_list('attendance__id', flat=True).filter(child__in=children, start_at__gt=start_at).distinct()
     attendances_ids = list(attendances_ids)
     if len(attendances_ids) == 1:
