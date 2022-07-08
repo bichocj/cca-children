@@ -7,16 +7,23 @@
 <div class="">
   <div class="card mb-3">
     <div class="card-header d-flex justify-content-between">
-      <h3>Asistencia</h3>      
+      <h3>Asistencia</h3>     
+      <form class="d-flex" action=".">
+        <label class="col-form-label">desde:</label> <input class="form-control" type="date" name="from" value="{{from_date|date:"SHORT_DATE_FORMAT"}}">
+        &nbsp;&nbsp;
+        <label class="col-form-label">hasta:</label> <input class="form-control" type="date" name="to" value="{{to_date|date:"SHORT_DATE_FORMAT"}}">
+        &nbsp;&nbsp;
+        <button class="btn btn-secondary btn-sm" type="submit">filtrar</button>
+      </form>
     </div>
     <div class="card-body">
       <table class="table" id="example">
         <thead>
           <tr>
-            <th>DNI</th>
+            <th>Salon</th>
             <th>Nombres</th>
             <th>Apoderado</th>
-            <th>Salon</th>
+            <th>Celular</th>
             <th>Dejado a las</th>
             <th>Recogido a las</th>
             <th></th>
@@ -26,10 +33,10 @@
         <tbody>
           {% for p in attedances_details %}
           <tr>
-            <td>{{p.child.dni|default:''}}</td>
-            <td>{{p.child.name}}</td>
-            <td>{{p.attendance.parent_a.name}} ( <span>{{p.attendance.parent_a.cellphone|default:''}}</span> )</td>
             <td>{{p.space.name}}</td>
+            <td>{{p.child.name}}</td>
+            <td>{{p.attendance.parent_a.name}}</td>
+            <td>{{p.attendance.parent_a.cellphone|default:''}}</td>
             <td>{{p.start_at|default:''}}</td>
             <td>{{p.end_at|default:''}}</td>
             <td id="ac_{{p.id}}">

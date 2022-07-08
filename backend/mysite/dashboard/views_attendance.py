@@ -4,13 +4,14 @@ from django.http import JsonResponse
 from . import models
 from accounts.models import Profile
 from django.shortcuts import redirect, render
-from django.db.models import Count
+from django.db.models import Count, DateField
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template import loader
 from django.conf import settings
 from datetime import datetime 
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect
+
 
 @login_required
 def create(request):
@@ -130,20 +131,38 @@ def verify_dni(request, dni):
 
 @login_required
 def in_spaces(request):
-  space = None
+  filters = {}
+
   try:
     u = Profile.objects.get(user=request.user)
-    space = u.space
+    if u.space:
+      filters['space'] = u.space
   except Profile.DoesNotExist:
     pass
   
-  start_at=datetime.now()
-  start_at = start_at.replace(minute=0, hour=0, second=0, microsecond=0)
-  
-  if space:
-    attedances_details = models.AttendanceDetail.objects.select_related('child', 'space', 'attendance__parent_a').filter(start_at__gt=start_at, space=space).order_by('-end_at')
-  else:
-    attedances_details = models.AttendanceDetail.objects.select_related('child', 'space', 'attendance__parent_a').filter(start_at__gt=start_at).order_by('-end_at')
+  now = datetime.now()
+  now = now.replace(minute=0, hour=0, second=0, microsecond=0)
+  try:
+    from_date = request.GET.get('from')
+    to_date = request.GET.get('to')
+    if from_date:
+      # import pdb; pdb.set_trace()
+      from_date = DateField().to_python(from_date)
+      from_date = now.replace(day=from_date.day, month=from_date.month, year=from_date.year)
+      filters['start_at__gt'] = from_date
+    else:      
+      from_date = now
+      filters['start_at__gt'] = from_date
+
+    if to_date:
+      to_date = DateField().to_python(to_date)
+      to_date = now.replace(day=to_date.day, month=to_date.month, year=to_date.year)
+      filters['end_at__lt'] = to_date
+  except:
+    pass
+  print('filters')
+  print(filters)
+  attedances_details = models.AttendanceDetail.objects.select_related('child', 'space', 'attendance__parent_a').filter(**filters).order_by('-end_at')
   return render(request, 'dashboard/attendances.html', locals())
 
 
