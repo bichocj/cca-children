@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from .helpers import profile_image_path
+from dashboard.models import Space
 
 class Profile(models.Model):
     """An extension of user model."""
@@ -9,6 +10,7 @@ class Profile(models.Model):
     avatar = models.ImageField(upload_to=profile_image_path,
                                default='defaults/img/default-user.png')
     phone = models.CharField(_('telephone'), max_length=12, blank=True, null=True)
+    space = models.ForeignKey(Space, null=True, blank=True, on_delete=models.CASCADE)
     #created_at = models.DateTimeField(auto_now_add=True)
     #updated_at = models.DateTimeField(auto_now=True)
 

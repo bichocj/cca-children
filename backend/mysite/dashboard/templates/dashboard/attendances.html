@@ -7,15 +7,7 @@
 <div class="">
   <div class="card mb-3">
     <div class="card-header d-flex justify-content-between">
-      <h3>Asistencia</h3>
-      <div>
-        <select class="form-select" aria-label="Default select example" id="space_id">
-          <option value="">Seleccione un salon</option>
-          {% for s in spaces %}
-          <option value="{{s.id}}" {% if s.id is space_id %} selected {% endif %}>{{s.name}}</option>
-          {% endfor %}
-        </select>
-      </div>
+      <h3>Asistencia</h3>      
     </div>
     <div class="card-body">
       <table class="table" id="example">
@@ -25,23 +17,28 @@
             <th>Nombres</th>
             <th>Apoderado</th>
             <th>Salon</th>
-            <th>Start at</th>
+            <th>Dejado a las</th>
             <th>Recogido a las</th>
+            <th></th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           {% for p in attedances_details %}
           <tr>
-            <td>{{p.child.dni}}</td>
+            <td>{{p.child.dni|default:''}}</td>
             <td>{{p.child.name}}</td>
             <td>{{p.attendance.parent_a.name}} ( <span>{{p.attendance.parent_a.cellphone|default:''}}</span> )</td>
             <td>{{p.space.name}}</td>
             <td>{{p.start_at|default:''}}</td>
             <td>{{p.end_at|default:''}}</td>
+            <td id="ac_{{p.id}}">
+              {% if not p.received %}
+              <button id="acb_{{p.id}}" class="btn btn-secondary" onclick="receive({{p.id}})">recibir</button>
+              {% endif %}
             <td id="ad_{{p.id}}">
               {% if not p.released %}
-                <a id="adb_{{p.id}}" class="btn btn-secondary" onclick="release({{p.id}})">liberar</a>
+                <button id="adb_{{p.id}}" class="btn btn-secondary" onclick="release({{p.id}})">liberar</button>
               {% endif %}
             </td>
           </tr>
@@ -58,11 +55,16 @@
 <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
 <script>
   function release(attendanceId) {
-    $(`#adb_${attendanceId}`).text('liberando..');
+    $(`#adb_${attendanceId}`).text('...');
     fetch(`/dashboard/attendance/release/${attendanceId}/`).then(() => {
-      window.location.reload();
+      $(`#ad_${attendanceId}`).html('');
     })
-    
+  }
+  function receive(attendanceId) {
+    $(`#acb_${attendanceId}`).text('...');
+    fetch(`/dashboard/attendance/receive/${attendanceId}/`).then(() => {
+      $(`#ac_${attendanceId}`).html('');
+    })
   }
   $(document).ready(function () {
     $('#example').DataTable({

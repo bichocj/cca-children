@@ -61,6 +61,7 @@ class AttendanceDetail(models.Model):
   attendance = models.ForeignKey(Attendance, on_delete=models.CASCADE, related_name='attendance')
   child = models.ForeignKey(Person, verbose_name='niño/a', on_delete=models.CASCADE)
   space = models.ForeignKey(Space, verbose_name='clase', on_delete=models.CASCADE)
+  received = models.BooleanField(default=False)
   released = models.BooleanField(default=False)
   start_at = models.DateTimeField(auto_now_add=True)
   end_at = models.DateTimeField(blank=True, null=True)

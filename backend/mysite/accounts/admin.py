@@ -12,7 +12,7 @@ class ProfileInline(admin.StackedInline):
 
 class CustomUserAdmin(UserAdmin):
     inlines = (ProfileInline, )
-    list_display = ['email','first_name', 'last_name', 'get_phone', 'date_joined']
+    list_display = ['username','first_name', 'last_name', 'get_phone', 'date_joined']
     list_select_related = ('profile', )
 
     def get_phone(self, instance):

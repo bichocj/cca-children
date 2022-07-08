@@ -2,6 +2,7 @@ import imp
 import json
 from django.http import JsonResponse
 from . import models
+from accounts.models import Profile
 from django.shortcuts import redirect, render
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
@@ -87,7 +88,7 @@ def save(request):
     print(e)
   return JsonResponse({'success': False})
 
-def checkoutAttendance(attendance_id):
+def checkout_attendance(attendance_id):
   details = models.AttendanceDetail.objects.filter(attendance__id=attendance_id)
   for d in details:
       d.end_at = datetime.now()
@@ -100,7 +101,7 @@ def verify_code(request, id):
     code = id
     codeparsed = int(int(code) / 13)
     models.Attendance.objects.get(id=codeparsed)
-    checkoutAttendance(codeparsed)
+    checkout_attendance(codeparsed)
     dict_obj= { 'attendances_ids': [codeparsed] }
     serialized = json.dumps(dict_obj)
     return HttpResponse(serialized, content_type='application/json')
@@ -120,7 +121,7 @@ def verify_dni(request, dni):
     attendances_ids = models.AttendanceDetail.objects.values_list('attendance__id', flat=True).filter(child__in=children, start_at__gt=start_at).distinct()
     attendances_ids = list(attendances_ids)
     if len(attendances_ids) == 1:
-      checkoutAttendance(attendances_ids[0])
+      checkout_attendance(attendances_ids[0])
     dict_obj= { 'attendances_ids': attendances_ids }
     serialized = json.dumps(dict_obj)
     return HttpResponse(serialized, content_type='application/json')
@@ -129,13 +130,18 @@ def verify_dni(request, dni):
 
 @login_required
 def in_spaces(request):
-  space_id = request.GET.get('space_id', '')
-  spaces = models.Space.objects.all()
+  space = None
+  try:
+    u = Profile.objects.get(user=request.user)
+    space = u.space
+  except Profile.DoesNotExist:
+    pass
+  
   start_at=datetime.now()
   start_at = start_at.replace(minute=0, hour=0, second=0, microsecond=0)
-  if space_id != '':
-    space_id = int(space_id)
-    attedances_details = models.AttendanceDetail.objects.select_related('child', 'space').filter(space__id=space_id, start_at__gt=start_at).order_by('-end_at')
+  
+  if space:
+    attedances_details = models.AttendanceDetail.objects.select_related('child', 'space', 'attendance__parent_a').filter(start_at__gt=start_at, space=space).order_by('-end_at')
   else:
     attedances_details = models.AttendanceDetail.objects.select_related('child', 'space', 'attendance__parent_a').filter(start_at__gt=start_at).order_by('-end_at')
   return render(request, 'dashboard/attendances.html', locals())
@@ -145,9 +151,20 @@ def in_spaces(request):
 def release(request, id):
   dict_obj= { 'success': True }
   try:
-    import pdb; pdb.set_trace()
     ad = models.AttendanceDetail.objects.get(id=id)
     ad.released = True
+    ad.save()
+  except models.AttendanceDetail.DoesNotExist:
+    dict_obj= { 'success': False }    
+  serialized = json.dumps(dict_obj)
+  return HttpResponse(serialized, content_type='application/json')
+
+@login_required
+def receive(request, id):
+  dict_obj= { 'success': True }
+  try:
+    ad = models.AttendanceDetail.objects.get(id=id)
+    ad.received = True
     ad.save()
   except models.AttendanceDetail.DoesNotExist:
     dict_obj= { 'success': False }    
