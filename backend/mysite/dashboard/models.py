@@ -29,6 +29,7 @@ class Person(models.Model):
   class Meta:
     verbose_name = "persona"
     verbose_name_plural = "personas"
+    permissions = (("can_see_people", "Can see people"),)
 
 class Attendance(models.Model):
   parent_a = models.ForeignKey(Person, verbose_name='deja', on_delete=models.CASCADE, related_name='parent_a')
@@ -39,6 +40,7 @@ class Attendance(models.Model):
   class Meta:
     verbose_name = "asistencia"
     verbose_name_plural = "asistencias"
+    permissions = (("can_see_attendances", "Can see attendances"),("can_leave_children", "Can leave children"),("can_pick_up_children", "Can pick up children"),)
 
   def __str__(self):
     return self.parent_a.name
@@ -84,3 +86,4 @@ class ChildSib(models.Model):
     verbose_name = "pariente"
     verbose_name_plural = "parientes"
     unique_together = ['child', 'sib']
+    permissions = (("can_see_families", "Can see families"),)
