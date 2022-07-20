@@ -331,11 +331,12 @@
     methods: {
       isValidDni: function(dni) {
         if(_.isEmpty(dni)) {
-          showToast('Advertencia', 'DNI invalido', 'danger');
+          showToast('Advertencia', 'DNI no puede ser vacio', 'danger');
           return false;
         }
-        if(dni.length !== 8) {
-          showToast('Advertencia', 'DNI invalido', 'danger');
+        const tmpDni = parseInt(dni);
+        if(isNaN(tmpDni)) {
+          showToast('Advertencia', 'DNI no es un número', 'danger');
           return false;
         }
         return true;
@@ -368,8 +369,9 @@
       },
       searchPerson: function () {
         this.searching = true;
-        if(this.isValidDni(this.parent.dni)) {
-          fetch(`/dashboard/get-person/${this.parent.dni}/?commit=true`).then( async(r) => {
+        const tmpDni = this.parent.dni?.trim();
+        if(this.isValidDni(tmpDni)) {
+          fetch(`/dashboard/get-person/${tmpDni}/?commit=true`).then( async(r) => {
             if(r.status === 200) {
               const {name, email, cellphone, id} = await r.json()
               this.parent.name = name;              
