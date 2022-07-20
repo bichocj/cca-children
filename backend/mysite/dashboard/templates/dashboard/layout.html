@@ -45,7 +45,7 @@
               {% if perms.dashboard.can_see_attendances %}<li class="nav-item"><a href="{% url 'dashboard:attendance_in_spaces' %}" class="nav-link">Ver Asistencia</a></li>{% endif %}
               {% if perms.dashboard.can_leave_children %}<li class="nav-item"><a href="{% url 'dashboard:attendance' %}" class="nav-link">Dejar Niños</a></li>{% endif %}
               {% if perms.dashboard.can_pick_up_children %}<li class="nav-item"><a href="{% url 'dashboard:attendance_checkout' %}" class="nav-link">Recoger Niños</a></li>{% endif %}
-              {% if perms.dashboard.can_see_family %}<li class="nav-item"><a href="{% url 'dashboard:family' %}" class="nav-link">Registrar Familia</a></li>{% endif %}
+              {% if perms.dashboard.can_see_families %}<li class="nav-item"><a href="{% url 'dashboard:family' %}" class="nav-link">Registrar Familia</a></li>{% endif %}
               {% if perms.dashboard.can_see_people %}<li class="nav-item"><a href="{% url 'dashboard:people_show_all' %}" class="nav-link">Ver Personas</a></li>{% endif %}
               
               

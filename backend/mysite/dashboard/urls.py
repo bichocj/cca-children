@@ -8,8 +8,9 @@ from . import views
 app_name = 'dashboard'
 
 urlpatterns = [
-  path('', views_attendance.in_spaces, name='attendance_in_spaces'),
-  path('attendances/create', views_attendance.create, name='attendance'),
+  path('', TemplateView.as_view(template_name="dashboard/index.html"), name='home'),
+  path('attendances/', views_attendance.in_spaces, name='attendance_in_spaces'),
+  path('attendances/create/', views_attendance.create, name='attendance'),
   path('out/', views_attendance.leave, name='attendance_leave'),  
   path('attendance/save/', views_attendance.save, name='attendance_save'),
   path('attendance/release/<int:id>/', views_attendance.release, name='attendance_release'),
