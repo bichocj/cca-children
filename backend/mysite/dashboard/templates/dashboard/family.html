@@ -59,7 +59,7 @@
     </div>
   </div>
   
-  <div class="d-md-flex justify-content-around">
+  <div class="d-md-flex justify-content-around mb-5">
     <div class="card mb-3">
       <div class="card-header">
         <h3>Otros familiares</h3>
@@ -76,9 +76,13 @@
     </div>
   </div>
 
-  <div class="text-center mb-5">
-    <button class="btn btn-primary btn-lg" v-on:click="saveAll">Guardar</button>
-  </div>
+  <nav class="navbar fixed-bottom navbar-light bg-light">
+    <div class="container-fluid">
+      <div class="mx-auto">
+        <button class="btn btn-primary" v-on:click="saveAll">Guardar</button>
+      </div>
+    </div>
+  </nav>
 </div>
 
 
@@ -93,12 +97,12 @@
           </div>
           <div class="modal-body">                      
             <div class="mb-3 row">
-              <label for="staticEmail" class="col-sm-4 col-form-label">DNI</label>
+              <label for="staticEmail" class="col-sm-4 col-form-label">DNI o Carnet Extranjeria</label>
               <div class="col-sm-8">
                 <input 
                   type="text" 
                   class="form-control" 
-                  placeholder="ingrese nro de DNI"
+                  placeholder="nro de DNI o Carnet Extranjeria"
                   v-model='parent.dni'
                 />
                 <small>No requerido</small>
@@ -185,7 +189,7 @@
         <input 
           type="text" 
           class="form-control" 
-          placeholder="ingrese nro de dni" 
+          placeholder="nro de DNI o Carnet Extranjeria" 
           aria-label="nro de dni" 
           aria-describedby="button-addon2"            
           v-model='parent.dni'

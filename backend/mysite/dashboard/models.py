@@ -17,7 +17,7 @@ ROL_CHOICES = (
 )
 
 class Person(models.Model):
-  dni = models.CharField(('DNI'), max_length=8, blank=True, null=True)
+  dni = models.CharField(('DNI/Carnet Extranjeria'), max_length=20, blank=True, null=True)
   name = models.CharField(('Nombre'), max_length=255, blank=False, null=False)
   email = models.EmailField(('Correo Electronico'), max_length=255, blank=True, null=True)
   cellphone = models.CharField(('Celular'), max_length=12, blank=True, null=True)
