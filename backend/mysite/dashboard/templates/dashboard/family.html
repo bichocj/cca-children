@@ -8,8 +8,7 @@
   <h2>Familia, crear/actualizar</h2>
   <br>
 
-  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <!--<div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">-->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
     <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="toast-header">
         <strong class="me-auto" id="toastTitle">Aviso</strong>        
@@ -79,7 +78,7 @@
   <nav class="navbar fixed-bottom navbar-light bg-light">
     <div class="container-fluid">
       <div class="mx-auto">
-        <button class="btn btn-primary" v-on:click="saveAll">Guardar</button>
+        <button class="btn btn-primary" v-on:click="saveAll">Guardar Familia</button>
       </div>
     </div>
   </nav>
@@ -175,7 +174,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn btn-primary"  v-on:click="savePerson()">${parent.id ? 'Actualizar': 'Guardar'}</button>
+            <button type="button" class="btn btn-primary"  v-on:click="savePerson()">${parent.id ? 'Actualizar': 'Guardar'} Persona</button>
           </div>
         </div>
       </div>
@@ -262,8 +261,8 @@
         </tbody>
       </table>
 
-      <div v-if="withChildren">
-        <b>Familia:</b>
+      <div v-if="withChildren" class="px-4">
+        <b>niños ya registados:</b>
         <table class="table table-sm">
           <thead>
             <tr>
@@ -480,7 +479,7 @@
               }
               this.onChange(this.parent, this.id);
             } else {
-              alert('Persona no encontrada');
+              showToast('Error', 'Persona no encontrada', 'danger');
             }
             this.searching = false;
           });
@@ -536,27 +535,32 @@
         }
       },
       async saveAll() {
-        
-        const csrftoken = Cookies.get('csrftoken');        
         if((_.isEmpty(this.mom) || _.isEmpty(this.dad) || this.others.length === 1) && this.children.length === 1) {
           showToast('Advertencia', 'Complete los campos', 'warning')
           return;
         }
         
-        
+        for(const o of this.children){
+          if(o.id && !o.dateOfBirth) {
+            showToast('Advertencia', `${o.name} no tiene la fecha de nacimiento llenada`, 'warning')
+            return;
+          }
+        }
+
         for(const o of this.others){
           if(o.id && !o.relationship.id) {
             showToast('Advertencia', `${o.name} no tiene el campo parentesco llenado`, 'warning')
             return;
           }
         }
-
+        
         const data = {
           mom: !_.isEmpty(this.mom) && this.mom.id,
           dad: !_.isEmpty(this.dad) && this.dad.id,
           children: this.children.filter(c => c.id).map(c => c.id),
           others: this.others.filter(c => c.id).map(c => ({id: c.id, relationshipId: c?.relationship?.id})),
         }
+        const csrftoken = Cookies.get('csrftoken');
         
         const response = await fetch('/dashboard/family/create/', {
           method: 'POST',

@@ -8,8 +8,7 @@
   <h2>Asistencia - Ingreso de niños</h2>
   <br>
 
-  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <!--<div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">-->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
     <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="toast-header">
         <strong class="me-auto" id="toastTitle">Aviso</strong>        
@@ -25,7 +24,7 @@
       <div class="card-header">
         <h3>La persona que <b>deja</b> a los niños</h3>
       </div>
-      <div class="card-body">
+      <div class="card-body" id="parent-a">
         <parent-searching 
           :on-change="updateParentA"
           :use-email="true"
@@ -62,7 +61,7 @@
       <div class="card-header">
         <h3>Seleccione a los Niños/as que se quedaran en la puerta del salon</h3>
       </div>
-      <div class="card-body">
+      <div class="card-body" id="children-table">
           <table class="table">
             <thead>
               <tr>
@@ -93,11 +92,11 @@
   </div>
   
 
-  <div class="d-md-flex justify-content-around">
+  <div class="d-md-flex justify-content-around mb-5 pb-5">
     <div>
       <div class="input-group mb-3">
         <label for="staticEmail" class="input-group-text">Salon donde dejara a los niños seleccionados</label>
-        <select class="form-select" v-model='currentSpace' style="width: 200px;" required>
+        <select id="classroom" class="form-select" v-model='currentSpace' style="width: 200px;" required>
           <option v-for="space in spaces"
             :key="space.id"
             :id="space.id"
@@ -109,13 +108,13 @@
     </div>
   </div>
 
-
-  
-  <div class="d-md-flex justify-content-around">
-    <div>        
-      <button class="btn btn-primary btn-lg" v-on:click="saveAll">Guardar</button>
+  <nav class="navbar fixed-bottom navbar-light bg-light">
+    <div class="container-fluid">
+      <div class="mx-auto">
+        <button class="btn btn-primary" v-on:click="saveAll">Guardar Familia</button>
+      </div>
     </div>
-  </div>
+  </nav>
 
 </div>
 
@@ -380,7 +379,7 @@
               this.parent.id = id;
               this.onChange(this.parent, this.id);
             } else {
-              alert('Persona no encontrada');
+              showToast('Error', 'Person no encontrada', 'danger');
             }
             this.searching = false;
           });
@@ -463,7 +462,7 @@
                 return ({...c, name, lastName, age, space, checked: false})
               });
             } else {
-              alert('Error en el servidor');
+              showToast('Error', 'Error en el servidor, intente mas tardecito', 'danger');
             }
             this.childrenLoading = false;
         });
@@ -471,6 +470,7 @@
       async saveAll() {
         if(_.isEmpty(this.parentA)) {
           showToast('Advertencia', 'Seleccione quien deja a los niños', 'warning')
+          document.getElementById('parent-a').scrollIntoView()
           return;
         }
         if(_.isEmpty(this.parentB)) {
@@ -480,10 +480,12 @@
         children = this.children.filter(c => c.checked);
         if(children.length === 0) {
           showToast('Advertencia', 'Seleccione los niños que deja en este salon', 'warning')
+          document.getElementById('children-table').scrollIntoView()
           return;
         }
         if(!this.currentSpace) {
           showToast('Advertencia', 'Seleccione el salon donde deja a los niños', 'warning')
+          document.getElementById('classroom').scrollIntoView()
           return;
         }
 

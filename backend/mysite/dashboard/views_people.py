@@ -135,12 +135,15 @@ def get_person(request, dni):
 
   except models.Person.DoesNotExist:
 #     #protocol = 'https' if request.is_secure() else 'http'
+    if len(dni) != 8:
+      serialized = json.dumps({'message':'bad dni, more than 8'})
+      return HttpResponseBadRequest(serialized, content_type='application/json')
     protocol = 'https'
     url = '{}://dniruc.apisperu.com/api/v1/dni/{}?token={}'.format(protocol, dni, settings.APIS_PERU_TOKEN)
     response = requests.get(url, headers={"Content-Type": "application/json"})
     personTmp = response.json()
     if not personTmp.get('success', True):
-      serialized = json.dumps({'message':'bad dni'})
+      serialized = json.dumps({'message':'bad dni, not found'})
       return HttpResponseBadRequest(serialized, content_type='application/json')
     name = personTmp.get('nombres', '') + ' ' + personTmp.get('apellidoPaterno', '') + ' ' + personTmp.get('apellidoMaterno', '')
     person = models.Person(dni=dni, name=name)
