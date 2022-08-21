@@ -58,12 +58,13 @@ def save(request):
     for child in children:
       id = child['id']
       spaceId = child['spaceId']
+      nro = child.get('nro', None)
       if spaceId == 'AU':
         age = child['age']
         space_i = models.Space.objects.filter(min_age__lte=age, max_age__gte=age).first()
-        details.append(models.AttendanceDetail(child=models.Person(id=id),space=space_i, attendance=attendance))
+        details.append(models.AttendanceDetail(child=models.Person(id=id),space=space_i, attendance=attendance, nro=nro))
       else:
-        details.append(models.AttendanceDetail(child=models.Person(id=id),space=models.Space(id=spaceId), attendance=attendance))
+        details.append(models.AttendanceDetail(child=models.Person(id=id),space=models.Space(id=spaceId), attendance=attendance, nro=nro))
 
     models.AttendanceDetail.objects.bulk_create(details, ignore_conflicts=True)
 

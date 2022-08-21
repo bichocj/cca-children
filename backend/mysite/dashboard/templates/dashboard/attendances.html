@@ -22,6 +22,7 @@
           <tr>
             <th>Salon</th>
             <th>Nombres</th>
+            <th>Nro</th>
             <th>Apoderado</th>
             <th>Celular</th>
             <th>Dejado a las</th>
@@ -35,6 +36,7 @@
           <tr>
             <td>{{p.space.name}}</td>
             <td>{{p.child.name}}</td>
+            <td>{%if p.nro %}N{% endif %}{{p.nro|default:''}}</td>
             <td>{{p.attendance.parent_a.name}}</td>
             <td>{{p.attendance.parent_a.cellphone|default:''}}</td>
             <td>{{p.start_at|default:''}}</td>

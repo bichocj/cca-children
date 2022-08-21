@@ -66,10 +66,7 @@
             <thead>
               <tr>
                 <th></th>
-                <th>DNI</th>
-                <th>Nombre</th>
-                <th>Edad</th>
-                <th>Salon sugerido</th>
+                <th>Niño/a</th>
               </tr>
             </thead>
             <tbody>
@@ -78,12 +75,28 @@
                 :key="child.id"                
               >
                 <td>
-                  <input type="checkbox" class="custom-control-input" v-model="child.checked">
+                  <input 
+                    type="checkbox" 
+                    class="custom-control-input" 
+                    v-model="child.checked"
+                    :id="child.id"
+                  >
                 </td>
-                <td>${child.dni}</td>
-                <td>${child?.name} ${child.lastName}</td>
-                <td>${child.age}</td>
-                <td>${child?.space?.name}</td>
+                <td>
+                  <label :for="child.id" class="w100">
+                    <b>Nombre:</b> ${child?.name} ${child.lastName}
+                    <br>
+                    <b>Fecha Nac:</b> ${child?.dateOfBirth}
+                    <br>
+                    <b>Edad:</b> ${child?.age}
+                    <br>
+                    <b>Salon sugerido:</b> ${child?.space?.name}
+                    <br>
+                    <div class="d-flex justify-content-between">
+                      <b>Nro de sticker:</b> <input class="form-control form-control-sm w-50"  v-model="child.nro" type="number" />
+                    </div>
+                  </label>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -496,7 +509,7 @@
           showToast('Advertencia', `${this.parentB.name} no tiene correo, deberá mostrar su DNI`, 'warning')          
         }
         const csrftoken = Cookies.get('csrftoken');
-        children = children.map(c => ({id: c.id, spaceId: this.currentSpace, age: c.age}));
+        children = children.map(c => ({id: c.id, spaceId: this.currentSpace, age: c.age, nro: c.nro}));
         const data = {
           parentA: this.parentA.id,
           parentB: this.parentB.id,
