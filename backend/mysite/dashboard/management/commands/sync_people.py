@@ -12,7 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         only_empty_lacomu_id = options['only_empty_lacomu_id']
         if only_empty_lacomu_id:
-            people_app = models.PersonApp.objects.filter(lacomu_id=None)
+            people_app = models.PersonApp.objects.filter(lacomu_id=0)
         else:
             people_app = models.PersonApp.objects.all()
         counting_update = 0
@@ -42,7 +42,7 @@ class Command(BaseCommand):
                 is_different = False
                 date_birth = None
                 payload = {}
-                if person_app.date_birth:
+                if person_app.date_of_birth:
                     date_birth = person_app.date_of_birth.strftime("%Y-%m-%d")
 
                 if person_foreign.get('email') != person_app.email:
