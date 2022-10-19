@@ -29,7 +29,11 @@ class Command(BaseCommand):
             response = requests.get(url, headers={"Content-Type": "application/json", "Authorization": settings.LA_COMU_API_KEY})
             result = response.json()
             
-            count = result.get('count', 0)            
+            count = result.get('count', 0)
+            date_birth = None            
+            if person_app.date_of_birth:
+                date_birth = person_app.date_of_birth.strftime("%Y-%m-%d")
+
             if count > 0:
                 people_tmp = result.get('results', [])
                 person_foreign = people_tmp[0]
@@ -40,10 +44,7 @@ class Command(BaseCommand):
 
                 # update foreign person in People project
                 is_different = False
-                date_birth = None
                 payload = {}
-                if person_app.date_of_birth:
-                    date_birth = person_app.date_of_birth.strftime("%Y-%m-%d")
 
                 if person_foreign.get('email') != person_app.email:
                     is_different = True
