@@ -23,7 +23,7 @@ class DateTimeEncoder(json.JSONEncoder):
 
 
 def show_all(request):
-  people = models.Person.objects.all()
+  people = models.PersonApp.objects.all()
   return render(request, 'dashboard/people/show_all.html', locals())
 
 def create(request):
@@ -39,10 +39,10 @@ def create(request):
 
 def show_details(request, dni):
   try:
-    person = models.Person.objects.get(id=dni)
+    person = models.PersonApp.objects.get(id=dni)
     relations = models.ChildSib.objects.select_related('child').filter(sib=person)
     return render(request, 'dashboard/people/show_details.html', locals())
-  except models.Person.DoesNotExist:
+  except models.PersonApp.DoesNotExist:
     return redirect(reverse('dashboard:people_show_all'))
 
 ROL_CHOICES = {
@@ -63,9 +63,9 @@ def family_create(request):
 
   for child in children:
     if mom:
-      objs.append(models.ChildSib(child=models.Person(id=child), sib=models.Person(id=mom), relationship_up=1, relationship_down=8))
+      objs.append(models.ChildSib(child=models.PersonApp(id=child), sib=models.PersonApp(id=mom), relationship_up=1, relationship_down=8))
     if dad:
-      objs.append(models.ChildSib(child=models.Person(id=child), sib=models.Person(id=dad), relationship_up=2, relationship_down=8))
+      objs.append(models.ChildSib(child=models.PersonApp(id=child), sib=models.PersonApp(id=dad), relationship_up=2, relationship_down=8))
     for other in others:
       other_id = other.get('id')
       relationship_id = other.get('relationshipId')
@@ -73,8 +73,8 @@ def family_create(request):
 
       objs.append(
         models.ChildSib(
-          child=models.Person(id=child), 
-          sib=models.Person(id=other_id), 
+          child=models.PersonApp(id=child), 
+          sib=models.PersonApp(id=other_id), 
           relationship_up=relationship_id, 
           relationship_down=relationship_down
         )
@@ -88,7 +88,7 @@ def family_create(request):
 @login_required
 def get_children(request, dni):
   try:
-    person = models.Person.objects.get(dni=dni)
+    person = models.PersonApp.objects.get(dni=dni)
     relations = models.ChildSib.objects.select_related('child').filter(sib=person)
     response = []
     for rs in relations:
@@ -100,7 +100,7 @@ def get_children(request, dni):
         'dateOfBirth': rs.child.date_of_birth
       })
     return JsonResponse({'data': response})
-  except models.Person.DoesNotExist:
+  except models.PersonApp.DoesNotExist:
     return HttpResponseBadRequest()
 
 def get_boolean_from_request(request, key, method='POST'):
@@ -120,7 +120,7 @@ def get_person(request, dni):
   with_children = get_boolean_from_request(request, 'with_children', 'GET')
   children = []
   try:
-    person = models.Person.objects.get(dni=dni)
+    person = models.PersonApp.objects.get(dni=dni)
 
     if with_children:
       relations = models.ChildSib.objects.select_related('child').filter(sib=person)
@@ -133,7 +133,7 @@ def get_person(request, dni):
           'dateOfBirth': rs.child.date_of_birth
         })
 
-  except models.Person.DoesNotExist:
+  except models.PersonApp.DoesNotExist:
 #     #protocol = 'https' if request.is_secure() else 'http'
     if len(dni) != 8:
       serialized = json.dumps({'message':'bad dni, more than 8'})
@@ -146,7 +146,7 @@ def get_person(request, dni):
       serialized = json.dumps({'message':'bad dni, not found'})
       return HttpResponseBadRequest(serialized, content_type='application/json')
     name = personTmp.get('nombres', '') + ' ' + personTmp.get('apellidoPaterno', '') + ' ' + personTmp.get('apellidoMaterno', '')
-    person = models.Person(dni=dni, name=name)
+    person = models.PersonApp(dni=dni, name=name)
     if commit:
       person.save()
   
@@ -168,7 +168,7 @@ def create_person(request):
     cellphone = parent.get('cellphone', '')
     date_of_birth = parent.get('dateOfBirth', None)
     if id:
-      person = models.Person.objects.get(id=id)
+      person = models.PersonApp.objects.get(id=id)
       person.name = name
       person.email = email
       person.cellphone = cellphone
@@ -177,10 +177,10 @@ def create_person(request):
     else:
       if dni:
         try:
-          person = models.Person.objects.get(dni=dni)  
+          person = models.PersonApp.objects.get(dni=dni)  
           return JsonResponse({'success': False, 'id': person.id})      
-        except models.Person.DoesNotExist:
+        except models.PersonApp.DoesNotExist:
           pass    
-      person = models.Person.objects.create(dni=dni, name=name, cellphone=cellphone, date_of_birth=date_of_birth, email=email)
+      person = models.PersonApp.objects.create(dni=dni, name=name, cellphone=cellphone, date_of_birth=date_of_birth, email=email)
   return JsonResponse({'success': True, 'id': person.id})
 

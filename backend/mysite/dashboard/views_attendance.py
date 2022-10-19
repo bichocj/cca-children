@@ -50,8 +50,8 @@ def save(request):
     parent_a_id = body['parentA']
     parent_b_id = body['parentB']
 
-    parent_a = models.Person.objects.get(id=parent_a_id)
-    parent_b = models.Person.objects.get(id=parent_b_id)
+    parent_a = models.PersonApp.objects.get(id=parent_a_id)
+    parent_b = models.PersonApp.objects.get(id=parent_b_id)
     attendance = models.Attendance.objects.create(parent_a=parent_a, parent_b=parent_b)
 
     details = []
@@ -62,9 +62,9 @@ def save(request):
       if spaceId == 'AU':
         age = child['age']
         space_i = models.Space.objects.filter(min_age__lte=age, max_age__gte=age).first()
-        details.append(models.AttendanceDetail(child=models.Person(id=id),space=space_i, attendance=attendance, nro=nro))
+        details.append(models.AttendanceDetail(child=models.PersonApp(id=id),space=space_i, attendance=attendance, nro=nro))
       else:
-        details.append(models.AttendanceDetail(child=models.Person(id=id),space=models.Space(id=spaceId), attendance=attendance, nro=nro))
+        details.append(models.AttendanceDetail(child=models.PersonApp(id=id),space=models.Space(id=spaceId), attendance=attendance, nro=nro))
 
     models.AttendanceDetail.objects.bulk_create(details, ignore_conflicts=True)
 
@@ -116,7 +116,7 @@ def verify_code(request, id):
 @login_required
 def verify_dni(request, dni):
   try:
-    person = models.Person.objects.get(dni=dni)
+    person = models.PersonApp.objects.get(dni=dni)
     children = models.ChildSib.objects.values_list('child').filter(sib=person)
     start_at = datetime.now()
     start_at = start_at.replace(minute=0, hour=0, second=0, microsecond=0)
@@ -127,7 +127,7 @@ def verify_dni(request, dni):
     dict_obj= { 'attendances_ids': attendances_ids }
     serialized = json.dumps(dict_obj)
     return HttpResponse(serialized, content_type='application/json')
-  except models.Person.DoesNotExist:
+  except models.PersonApp.DoesNotExist:
     return HttpResponseNotFound()
 
 @login_required

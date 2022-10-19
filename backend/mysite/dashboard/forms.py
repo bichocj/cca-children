@@ -6,7 +6,7 @@ from . import models
 
 class PersonForm(forms.ModelForm):    
     class Meta:
-        model = models.Person
+        model = models.PersonApp
         fields = ('dni', 'name', 'email', 'cellphone')
 
     helper = FormHelper()
@@ -16,7 +16,7 @@ class PersonForm(forms.ModelForm):
     def clean_dni(self):
         dni = self.cleaned_data['dni']
         try:
-          models.Person.objects.get(dni=dni)
+          models.PersonApp.objects.get(dni=dni)
           raise ValidationError("este dni ya fue registrado anteriormente")
-        except models.Person.DoesNotExist:
+        except models.PersonApp.DoesNotExist:
           return dni

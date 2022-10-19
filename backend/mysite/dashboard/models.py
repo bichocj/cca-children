@@ -16,8 +16,10 @@ ROL_CHOICES = (
   (10, 'nieto/a'),
 )
 
-class Person(models.Model):
+class PersonApp(models.Model):
   dni = models.CharField(('DNI/Carnet Extranjeria'), max_length=20, blank=True, null=True)
+  lacomu_id = models.IntegerField(default=0) #swith to unique=True
+
   name = models.CharField(('Nombre'), max_length=255, blank=False, null=False)
   email = models.EmailField(('Correo Electronico'), max_length=255, blank=True, null=True)
   cellphone = models.CharField(('Celular'), max_length=12, blank=True, null=True)
@@ -32,8 +34,8 @@ class Person(models.Model):
     permissions = (("can_see_people", "Can see people"),)
 
 class Attendance(models.Model):
-  parent_a = models.ForeignKey(Person, verbose_name='deja', on_delete=models.CASCADE, related_name='parent_a')
-  parent_b = models.ForeignKey(Person, verbose_name='recoje', on_delete=models.CASCADE, related_name='parent_b')
+  parent_a = models.ForeignKey(PersonApp, verbose_name='deja', on_delete=models.CASCADE, related_name='parent_a')
+  parent_b = models.ForeignKey(PersonApp, verbose_name='recoje', on_delete=models.CASCADE, related_name='parent_b')
   start_at = models.DateTimeField(auto_now_add=True)
   end_at = models.DateTimeField(blank=True, null=True)
 
@@ -61,7 +63,7 @@ class Space(models.Model):
   
 class AttendanceDetail(models.Model):
   attendance = models.ForeignKey(Attendance, on_delete=models.CASCADE, related_name='attendance')
-  child = models.ForeignKey(Person, verbose_name='niño/a', on_delete=models.CASCADE)
+  child = models.ForeignKey(PersonApp, verbose_name='niño/a', on_delete=models.CASCADE)
   space = models.ForeignKey(Space, verbose_name='clase', on_delete=models.CASCADE)
   nro = models.CharField('nro', max_length=10, blank=True, null=True)
   received = models.BooleanField(default=False)
@@ -78,8 +80,8 @@ class AttendanceDetail(models.Model):
 
 
 class ChildSib(models.Model):
-  child = models.ForeignKey(Person, verbose_name='niño/a', on_delete=models.CASCADE, related_name='child')
-  sib = models.ForeignKey(Person, verbose_name='pariente', on_delete=models.CASCADE, related_name='sib')
+  child = models.ForeignKey(PersonApp, verbose_name='niño/a', on_delete=models.CASCADE, related_name='child')
+  sib = models.ForeignKey(PersonApp, verbose_name='pariente', on_delete=models.CASCADE, related_name='sib')
   relationship_up = models.IntegerField('relacion arriba', choices=ROL_CHOICES, blank=True, null=True)
   relationship_down = models.IntegerField('relacion abajo', choices=ROL_CHOICES, blank=True, null=True)
 
