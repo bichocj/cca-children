@@ -74,7 +74,7 @@ class Command(BaseCommand):
                     "cellphone": person_app.cellphone,
                     "email": person_app.email
                 }
-                result = requests.post(url, data=payload, headers={"Authorization": settings.LA_COMU_API_KEY})
+                response = requests.post(url, data=payload, headers={"Authorization": settings.LA_COMU_API_KEY})
                 # update lacomu_id in PersonApp model
                 result = response.json()
                 person_app.lacomu_id = result.get('id')
