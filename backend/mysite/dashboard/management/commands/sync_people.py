@@ -23,7 +23,7 @@ class Command(BaseCommand):
         print('Total to process: ', len(people_app))
         for person_app in people_app:
             counting += 1
-            print("processing ", counting, ": ", person_app.dni)
+            print("processing " + str(counting) + " { dni: " + str(person_app.dni) + ", lacomu_id: " + str(person_app.lacomu_id) + " }")
             dni = person_app.dni
             url = 'https://lacomu-people.herokuapp.com/api/people/?dni={}'.format(dni)
             response = requests.get(url, headers={"Content-Type": "application/json", "Authorization": settings.LA_COMU_API_KEY})
