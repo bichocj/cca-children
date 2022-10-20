@@ -74,11 +74,14 @@ class Command(BaseCommand):
                     "cellphone": person_app.cellphone,
                     "email": person_app.email
                 }
-                response = requests.post(url, data=payload, headers={"Authorization": settings.LA_COMU_API_KEY})
-                # update lacomu_id in PersonApp model
-                result = response.json()
-                person_app.lacomu_id = result.get('id')
-                person_app.save()
-                counting_created += 1
+                try:
+                    response = requests.post(url, data=payload, headers={"Authorization": settings.LA_COMU_API_KEY})
+                    # update lacomu_id in PersonApp model
+                    result = response.json()
+                    person_app.lacomu_id = result.get('id')
+                    person_app.save()
+                    counting_created += 1
+                except:
+                    pass
         self.stdout.write(self.style.SUCCESS('updates %s, updated %s' % (counting_update, counting_updated)))
         self.stdout.write(self.style.SUCCESS('creates %s, creating %s' % (counting_create, counting_created)))
